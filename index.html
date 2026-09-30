@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulator Interaktif Mekanika Fluida & Tekanan Hidrostatis</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .tab-active {
+            background-color: #0284c7;
+            color: #ffffff;
+            border-bottom: 3px solid #38bdf8;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            background-color: #1e293b;
+            color: #94a3b8;
+        }
+        .tab-inactive:hover {
+            background-color: #334155;
+            color: #f1f5f9;
+        }
+        canvas {
+            touch-action: none;
+            background: linear-gradient(to bottom, #0f172a, #1e293b);
+        }
+        /* Custom slider styling */
+        input[type=range] {
+            accent-color: #38bdf8;
+        }
+        /* Glassmorphism panel */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Media Print Styling untuk Cetak & Download PDF LKPD */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: Arial, sans-serif !important;
+            }
+            header, footer, .no-print, .glass-panel:not(#lkpd-printable-area) {
+                display: none !important;
+            }
+            #tab-5 {
+                display: block !important;
+            }
+            #lkpd-printable-area {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+            input[type="text"], textarea, select {
+                border: 1px solid #666666 !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+            }
+            .print-border {
+                border: 1px solid #444444 !important;
+            }
+            .print-header {
+                border-bottom: 2px solid #000000 !important;
+                margin-bottom: 15px !important;
+                padding-bottom: 10px !important;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between select-none">
+
+    <!-- Header Utama -->
+    <header class="bg-slate-900 border-b border-slate-800 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-sky-600/20 border border-sky-500/30 rounded-xl text-sky-400">
+                    <i class="fa-solid fa-flask-vial text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+                        Lab Virtual Mekanika Fluida
+                    </h1>
+                    <p class="text-xs text-slate-400">Tekanan Hidrostatis, Hukum Pascal, & Hukum Archimedes</p>
+                </div>
+            </div>
+
+            <!-- Tombol Identitas & Bantuan -->
+            <div class="flex items-center gap-2">
+                <button id="btn-identitas" onclick="openModal('modal-identitas')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sky-300 text-xs rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-id-card"></i> Identitas Penyusun
+                </button>
+                <button id="btn-petunjuk" onclick="openModal('modal-petunjuk')" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg transition flex items-center gap-2 shadow-md shadow-sky-900/30">
+                    <i class="fa-solid fa-circle-question"></i> Panduan
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigasi Tab Percobaan -->
+        <div class="max-w-7xl mx-auto px-4 mt-2 flex flex-wrap gap-2 text-sm font-medium border-t border-slate-800/80 pt-2">
+            <button onclick="switchTab(1)" id="tab-btn-1" class="tab-active px-4 py-2.5 rounded-t-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-bottle-water"></i> 1. Pancaran 3 Lubang
+            </button>
+            <button onclick="switchTab(2)" id="tab-btn-2" class="tab-inactive px-4 py-2.5 rounded-t-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-vial-circle-check"></i> 2. Jenis Zat Cair
+            </button>
+            <button onclick="switchTab(3)" id="tab-btn-3" class="tab-inactive px-4 py-2.5 rounded-t-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-truck-pickup"></i> 3. Hukum Pascal
+            </button>
+            <button onclick="switchTab(4)" id="tab-btn-4" class="tab-inactive px-4 py-2.5 rounded-t-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-anchor"></i> 4. Hukum Archimedes
+            </button>
+            <button onclick="switchTab(5)" id="tab-btn-5" class="tab-inactive px-4 py-2.5 rounded-t-lg transition flex items-center gap-2 text-amber-400 font-bold border-b-2 border-amber-400">
+                <i class="fa-solid fa-file-pen"></i> 5. LKPD Interaktif
+            </button>
+        </div>
+    </header>
+
+    <!-- Konten Utama Simulator -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- ================= PERCOBAAN 1: BOTOL 3 LUBANG ================= -->
+        <section id="tab-1" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Visualisasi Canvas -->
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
+                <div class="w-full flex justify-between items-center mb-2 px-2">
+                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
+                        <i class="fa-solid fa-eye"></i> Visualisasi Pancaran Air
+                    </span>
+                    <span class="text-xs text-slate-400">Tekanan terbesar di lubang paling bawah memancarkan air paling jauh</span>
+                </div>
+                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                    <canvas id="canvas-tab1" class="w-full h-full block"></canvas>
+                </div>
+            </div>
+
+            <!-- Panel Kontrol & Data Percobaan 1 -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sky-400"></i> Kontrol & Parameter
+                    </h3>
+
+                    <!-- Tinggi Air dalam Botol -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Tinggi Air dalam Botol (H):</span>
+                            <span id="val-t1-height" class="text-sky-400 font-bold">35 cm</span>
+                        </div>
+                        <input type="range" id="slider-t1-height" min="10" max="40" step="1" value="35" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                            <span>10 cm</span>
+                            <span>Maksimal: 40 cm</span>
+                        </div>
+                    </div>
+
+                    <!-- Saklar Sumbat Lubang -->
+                    <div class="mb-4 bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
+                        <span class="text-xs font-semibold text-slate-300 block mb-2">Status Lubang (Buka / Tutup):</span>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button id="btn-hole-1" onclick="toggleHole(1)" class="px-2 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition">
+                                Lubang Top (A)
+                            </button>
+                            <button id="btn-hole-2" onclick="toggleHole(2)" class="px-2 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition">
+                                Lubang Mid (B)
+                            </button>
+                            <button id="btn-hole-3" onclick="toggleHole(3)" class="px-2 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition">
+                                Lubang Low (C)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pilihan Isi Ulang / Otomatis -->
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="fillWaterTab1()" class="flex-1 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl transition flex justify-center items-center gap-2 shadow-lg shadow-sky-900/40">
+                            <i class="fa-solid fa-faucet-drip"></i> Isi Air Penuh
+                        </button>
+                        <button id="btn-auto-refill" onclick="toggleAutoRefill()" class="py-2 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition">
+                            Aliran Konstan: OFF
+                        </button>
+                    </div>
+
+                    <!-- Tabel Data Hasil Pengamatan -->
+                    <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
+                        <div class="font-bold text-sky-400 border-b border-slate-800 pb-1 flex justify-between">
+                            <span>Posisi Lubang</span>
+                            <span>Kedalaman (h)</span>
+                            <span>Jarak Pancar (x)</span>
+                        </div>
+                        <div class="flex justify-between text-slate-300">
+                            <span class="font-semibold text-amber-400">Atas (A - 30cm)</span>
+                            <span id="p1-h1">5 cm</span>
+                            <span id="p1-x1" class="font-mono text-sky-300">0 cm</span>
+                        </div>
+                        <div class="flex justify-between text-slate-300">
+                            <span class="font-semibold text-emerald-400">Tengah (B - 20cm)</span>
+                            <span id="p1-h2">15 cm</span>
+                            <span id="p1-x2" class="font-mono text-sky-300">0 cm</span>
+                        </div>
+                        <div class="flex justify-between text-slate-300">
+                            <span class="font-semibold text-indigo-400">Bawah (C - 10cm)</span>
+                            <span id="p1-h3">25 cm</span>
+                            <span id="p1-x3" class="font-mono text-sky-300">0 cm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rumus Ringkas -->
+                <div class="p-3 bg-sky-950/40 border border-sky-800/40 rounded-xl text-[11px] text-sky-200/90">
+                    <p class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-square-root-variable"></i> Persamaan Torricelli:</p>
+                    <p>Tekanan Hidrostatis: P = ρ x g x h</p>
+                    <p>Kecepatan Keluar: v = √(2 x g x h)</p>
+                    <p class="text-[10px] text-slate-300 mt-1">*Makin dalam kedalaman (h), tekanan P makin besar, kecepatan keluar v makin tinggi, sehingga jarak pancaran x paling jauh di lubang bawah.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PERCOBAAN 2: PENGARUH JENIS ZAT CAIR ================= -->
+        <section id="tab-2" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+            <!-- Visualisasi Canvas -->
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
+                <div class="w-full flex justify-between items-center mb-2 px-2">
+                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
+                        <i class="fa-solid fa-vial"></i> Pengukuran Tekanan Hidrostatis dengan Sensor Manometer
+                    </span>
+                    <span class="text-xs text-slate-400">Geser atau Atur Kedalaman Sensor</span>
+                </div>
+                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                    <canvas id="canvas-tab2" class="w-full h-full block"></canvas>
+                </div>
+            </div>
+
+            <!-- Panel Kontrol Percobaan 2 -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-flask text-sky-400"></i> Karakteristik Fluida
+                    </h3>
+
+                    <!-- Pilihan Jenis Fluida -->
+                    <div class="mb-4">
+                        <label class="text-xs font-medium text-slate-300 block mb-1">Pilih Jenis Zat Cair:</label>
+                        <select id="select-t2-fluid" onchange="updateFluidTab2()" class="w-full bg-slate-800 border border-slate-700 text-sky-300 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-sky-500">
+                            <option value="1000" data-color="#0284c7" data-name="Air Murni">Air Murni (ρ = 1000 kg/m³)</option>
+                            <option value="800" data-color="#eab308" data-name="Minyak Goreng">Minyak Goreng (ρ = 800 kg/m³)</option>
+                            <option value="1030" data-color="#38bdf8" data-name="Air Garam / Laut">Air Garam (ρ = 1030 kg/m³)</option>
+                            <option value="1260" data-color="#a855f7" data-name="Gliserin">Gliserin (ρ = 1260 kg/m³)</option>
+                            <option value="13600" data-color="#94a3b8" data-name="Raksa">Raksa (ρ = 13600 kg/m³)</option>
+                        </select>
+                    </div>
+
+                    <!-- Slider Kedalaman Sensor (h) -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Kedalaman Sensor (h):</span>
+                            <span id="val-t2-depth" class="text-sky-400 font-bold">50 cm</span>
+                        </div>
+                        <input type="range" id="slider-t2-depth" min="5" max="100" step="1" value="50" oninput="updateTab2Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Slider Percepatan Gravitasi (g) -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Percepatan Gravitasi (g):</span>
+                            <span id="val-t2-gravity" class="text-sky-400 font-bold">9.8 m/s²</span>
+                        </div>
+                        <input type="range" id="slider-t2-gravity" min="1.6" max="25" step="0.1" value="9.8" oninput="updateTab2Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                            <span>Bulan (1.6)</span>
+                            <span>Bumi (9.8)</span>
+                            <span>Yupiter (24.8)</span>
+                        </div>
+                    </div>
+
+                    <!-- Hasil Pengukuran Manometer Digital -->
+                    <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-3">
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-1">
+                            Hasil Pengukuran Digital
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-300">Tekanan Hidrostatis (Ph):</span>
+                            <span id="out-t2-ph" class="text-base font-extrabold font-mono text-emerald-400">4900 Pa</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-300">Konversi ke kPa:</span>
+                            <span id="out-t2-kpa" class="text-sm font-bold font-mono text-sky-400">4.90 kPa</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-300">Tekanan Total (+ Patm):</span>
+                            <span id="out-t2-ptotal" class="text-xs font-bold font-mono text-amber-300">106.22 kPa</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300">
+                    <p class="font-semibold text-sky-400 mb-1"><i class="fa-solid fa-lightbulb"></i> Kesimpulan Percobaan 2:</p>
+                    <p class="text-[11px] leading-relaxed">Makin besar masa jenis zat cair (ρ) dan makin dalam posisi titik (h), maka tekanan hidrostatis (P) akan bernilai makin besar.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PERCOBAAN 3: HUKUM PASCAL ================= -->
+        <section id="tab-3" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+            <!-- Visualisasi Canvas Dongkrak Hidrolik -->
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
+                <div class="w-full flex justify-between items-center mb-2 px-2">
+                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
+                        <i class="fa-solid fa-compress"></i> Simulator Dongkrak Hidrolik
+                    </span>
+                    <span class="text-xs text-slate-400">Tekanan Diteruskan ke Segala Arah Sama Besar</span>
+                </div>
+                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                    <canvas id="canvas-tab3" class="w-full h-full block"></canvas>
+                </div>
+            </div>
+
+            <!-- Panel Kontrol Percobaan 3 -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-gears text-sky-400"></i> Kontrol Penampang & Gaya
+                    </h3>
+
+                    <!-- Luas Penampang 1 (A1) -->
+                    <div class="mb-3">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Luas Piston Kecil (A1):</span>
+                            <span id="val-t3-a1" class="text-sky-400 font-bold">2 cm²</span>
+                        </div>
+                        <input type="range" id="slider-t3-a1" min="1" max="10" step="1" value="2" oninput="updateTab3Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Luas Penampang 2 (A2) -->
+                    <div class="mb-3">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Luas Piston Besar (A2):</span>
+                            <span id="val-t3-a2" class="text-sky-400 font-bold">20 cm²</span>
+                        </div>
+                        <input type="range" id="slider-t3-a12" min="10" max="100" step="2" value="20" oninput="updateTab3Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Gaya Input F1 -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Gaya Tekan Input (F1):</span>
+                            <span id="val-t3-f1" class="text-sky-400 font-bold">100 N</span>
+                        </div>
+                        <input type="range" id="slider-t3-f1" min="10" max="500" step="10" value="100" oninput="updateTab3Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Tombol Tekan Piston -->
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="pressPistonPascal()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition shadow-lg shadow-emerald-900/40 flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-hand-back-fist"></i> Tekan Piston Kecil
+                        </button>
+                        <button onclick="resetPascal()" class="py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition">
+                            Reset
+                        </button>
+                    </div>
+
+                    <!-- Data Output & Perhitungan -->
+                    <div class="bg-slate-900/90 rounded-xl p-3.5 border border-slate-800 space-y-2 text-xs">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-1">
+                            <span class="text-slate-400">Keuntungan Mekanis (A2 / A1):</span>
+                            <span id="out-t3-km" class="font-bold text-amber-400 font-mono">10 x</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-300">Gaya Output (F2):</span>
+                            <span id="out-t3-f2" class="font-extrabold text-base text-sky-400 font-mono">1000 N</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-300">Massa Maks Beban Terangkat:</span>
+                            <span id="out-t3-mass" class="font-bold text-emerald-400 font-mono">102 kg</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-[11px] text-slate-300">
+                    <p class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-equals"></i> Formulasi Hukum Pascal:</p>
+                    <p class="font-mono text-center bg-slate-950 p-1 rounded my-1 text-sky-300">F1 / A1 = F2 / A2</p>
+                    <p>Gaya kecil pada penampang kecil mampu menghasilkan gaya yang jauh lebih besar pada penampang luas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PERCOBAAN 4: HUKUM ARCHIMEDES ================= -->
+        <section id="tab-4" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+            <!-- Visualisasi Canvas Benda dalam Zat Cair -->
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
+                <div class="w-full flex justify-between items-center mb-2 px-2">
+                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
+                        <i class="fa-solid fa-box-archive"></i> Neraca Pegas & Bejana Tumpahan
+                    </span>
+                    <span id="archimedes-status-tag" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold">
+                        Status: Terapung
+                    </span>
+                </div>
+                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                    <canvas id="canvas-tab4" class="w-full h-full block"></canvas>
+                </div>
+            </div>
+
+            <!-- Panel Kontrol Percobaan 4 -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-sky-400"></i> Variabel Benda & Fluida
+                    </h3>
+
+                    <!-- Massa Benda -->
+                    <div class="mb-3">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Massa Benda (m):</span>
+                            <span id="val-t4-mass" class="text-sky-400 font-bold">2.0 kg</span>
+                        </div>
+                        <input type="range" id="slider-t4-mass" min="0.5" max="10.0" step="0.5" value="2.0" oninput="updateTab4Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Volume Benda -->
+                    <div class="mb-3">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Volume Benda (V):</span>
+                            <span id="val-t4-vol" class="text-sky-400 font-bold">2500 cm³</span>
+                        </div>
+                        <input type="range" id="slider-t4-vol" min="500" max="5000" step="100" value="2500" oninput="updateTab4Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Massa Jenis Fluida -->
+                    <div class="mb-4">
+                        <label class="text-xs font-medium text-slate-300 block mb-1">Fluida Pencelup:</label>
+                        <select id="select-t4-fluid" onchange="updateTab4Calculations()" class="w-full bg-slate-800 border border-slate-700 text-sky-300 rounded-xl p-2 text-xs font-semibold focus:outline-none">
+                            <option value="1000" data-color="#0284c7">Air Murni (1000 kg/m³)</option>
+                            <option value="800" data-color="#eab308">Minyak Goreng (800 kg/m³)</option>
+                            <option value="1030" data-color="#06b6d4">Air Laut (1030 kg/m³)</option>
+                            <option value="1260" data-color="#a855f7">Gliserin (1260 kg/m³)</option>
+                        </select>
+                    </div>
+
+                    <!-- Posisi Pencelupan (Tali Neraca) -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">Posisi Turun Benda:</span>
+                            <span id="val-t4-pos" class="text-sky-400 font-bold">50 %</span>
+                        </div>
+                        <input type="range" id="slider-t4-pos" min="0" max="100" step="1" value="50" oninput="updateTab4Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Ringkasan Gaya Archimedes -->
+                    <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Massa Jenis Benda (ρb):</span>
+                            <span id="out-t4-rhob" class="font-bold text-sky-300">800 kg/m³</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Berat Asli di Udara (W):</span>
+                            <span id="out-t4-w" class="font-bold text-amber-400">19.6 N</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Gaya Apung (Fa):</span>
+                            <span id="out-t4-fa" class="font-bold text-emerald-400">19.6 N</span>
+                        </div>
+                        <div class="flex justify-between border-t border-slate-800 pt-1">
+                            <span class="text-slate-300 font-semibold">Berat Semu (W' = W - Fa):</span>
+                            <span id="out-t4-wapp" class="font-bold text-sky-400">0.0 N</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-[11px] text-slate-300">
+                    <p class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-water"></i> Hukum Archimedes:</p>
+                    <p>Gaya ke atas (Fa) sama dengan berat fluida yang dipindahkan oleh bagian benda yang tercelup.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: LKPD INTERAKTIF & EXPORT PDF ================= -->
+        <section id="tab-5" class="hidden">
+            <div id="lkpd-printable-area" class="glass-panel p-6 rounded-2xl shadow-2xl max-w-5xl mx-auto bg-slate-900 border border-slate-800">
+                
+                <!-- Header LKPD -->
+                <div class="print-header flex flex-col md:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30 no-print">
+                            <i class="fa-solid fa-file-signature text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white uppercase tracking-wide">LEMBAR KERJA PESERTA DIDIK (LKPD)</h2>
+                            <p class="text-xs text-sky-400 font-semibold">Praktikum Virtual Mekanika Fluida & Tekanan Hidrostatis</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tombol Aksi LKPD (Tidak ikut tercetak) -->
+                    <div class="no-print mt-4 md:mt-0 flex flex-wrap gap-2">
+                        <button onclick="autoFillLKPDFromSim()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2 shadow-lg shadow-sky-900/40">
+                            <i class="fa-solid fa-rotate"></i> Salin Data dari Simulasi
+                        </button>
+                        <button onclick="saveLKPDDraft()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-900/40">
+                            <i class="fa-solid fa-floppy-disk"></i> Simpan Draf
+                        </button>
+                        <button onclick="printLKPD()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-900/40">
+                            <i class="fa-solid fa-print"></i> Download PDF / Cetak
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Identitas Siswa -->
+                <div class="mb-6 p-4 bg-slate-800/80 rounded-xl border border-slate-700 print-border">
+                    <h3 class="text-sm font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-pen"></i> Identitas Peserta Didik / Kelompok
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <label class="block text-slate-300 font-medium mb-1">Nama Lengkap / Anggota:</label>
+                            <input type="text" id="lkpd-nama" placeholder="Tuliskan nama anggota..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-medium mb-1">Kelas / Kelompok:</label>
+                            <input type="text" id="lkpd-kelas" placeholder="Contoh: XI-MIPA 1 / Kelompok 3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-medium mb-1">Tanggal & Sekolah:</label>
+                            <input type="text" id="lkpd-sekolah" placeholder="Nama Sekolah / Tanggal" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 1: Percobaan Pancaran 3 Lubang -->
+                <div class="mb-8 space-y-3">
+                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
+                        <span>A. Percobaan 1: Tekanan Hidrostatis (Pancaran 3 Lubang)</span>
+                    </h3>
+                    <p class="text-xs text-slate-300">Tujuan: Menganalisis hubungan antara kedalaman zat cair dengan jarak pancaran air (x) dan kecepatan keluarnya air.</p>
+                    
+                    <!-- Tabel Hasil Pengamatan Percobaan 1 -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-slate-300 border border-slate-700 print-border">
+                            <thead class="bg-slate-800 text-sky-300 font-semibold">
+                                <tr>
+                                    <th class="p-2 border border-slate-700">Posisi Lubang</th>
+                                    <th class="p-2 border border-slate-700">Ketinggian Lubang (y)</th>
+                                    <th class="p-2 border border-slate-700">Kedalaman (h)</th>
+                                    <th class="p-2 border border-slate-700">Jarak Pancaran Terukur (x)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-slate-900/50">
+                                    <td class="p-2 border border-slate-700 font-semibold text-amber-400">Atas (A)</td>
+                                    <td class="p-2 border border-slate-700">30 cm</td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-h1" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-x1" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
+                                </tr>
+                                <tr class="bg-slate-900/50">
+                                    <td class="p-2 border border-slate-700 font-semibold text-emerald-400">Tengah (B)</td>
+                                    <td class="p-2 border border-slate-700">20 cm</td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-h2" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-x2" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
+                                </tr>
+                                <tr class="bg-slate-900/50">
+                                    <td class="p-2 border border-slate-700 font-semibold text-indigo-400">Bawah (C)</td>
+                                    <td class="p-2 border border-slate-700">10 cm</td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-h3" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-x3" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pertanyaan Analisis P1 -->
+                    <div class="text-xs space-y-2 pt-2">
+                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 1:</label>
+                        <p class="text-slate-400">1. Lubang manakah yang memancarkan air paling jauh? Mengapa hal tersebut dapat terjadi berdasarkan konsep kedalaman ($h$) dan tekanan hidrostatis?</p>
+                        <textarea id="lkpd-q1" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
+                    </div>
+                </div>
+
+                <!-- Bagian 2: Percobaan Jenis Zat Cair -->
+                <div class="mb-8 space-y-3">
+                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
+                        <span>B. Percobaan 2: Pengaruh Massa Jenis Fluida & Kedalaman</span>
+                    </h3>
+                    <p class="text-xs text-slate-300">Tujuan: Menganalisis pengaruh massa jenis fluida ($\rho$) dan kedalaman ($h$) terhadap nilai tekanan hidrostatis ($P_h$).</p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-slate-300 border border-slate-700 print-border">
+                            <thead class="bg-slate-800 text-sky-300 font-semibold">
+                                <tr>
+                                    <th class="p-2 border border-slate-700">Jenis Fluida</th>
+                                    <th class="p-2 border border-slate-700">Massa Jenis ($\rho$)</th>
+                                    <th class="p-2 border border-slate-700">Kedalaman Sensor ($h$)</th>
+                                    <th class="p-2 border border-slate-700">Tekanan Hidrostatis ($P_h$)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-slate-900/50">
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-name" value="Air Murni" class="w-full bg-transparent focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-rho" value="1000 kg/m³" class="w-full bg-transparent focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-h" class="w-full bg-transparent focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-p" class="w-full bg-transparent focus:outline-none"></td>
+                                </tr>
+                                <tr class="bg-slate-900/50">
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-name" value="Minyak Goreng" class="w-full bg-transparent focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-rho" value="800 kg/m³" class="w-full bg-transparent focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-h" class="w-full bg-transparent focus:outline-none"></td>
+                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-p" class="w-full bg-transparent focus:outline-none"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-xs space-y-2 pt-2">
+                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 2:</label>
+                        <p class="text-slate-400">2. Bagaimana pengaruh perubahan massa jenis fluida ($\rho$) terhadap tekanan hidrostatis jika kedalaman ($h$) dijaga tetap sama?</p>
+                        <textarea id="lkpd-q2" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
+                    </div>
+                </div>
+
+                <!-- Bagian 3: Hukum Pascal -->
+                <div class="mb-8 space-y-3">
+                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
+                        <span>C. Percobaan 3: Hukum Pascal (Dongkrak Hidrolik)</span>
+                    </h3>
+                    <p class="text-xs text-slate-300">Tujuan: Membuktikan prinsip penerusan tekanan pada ruang tertutup dan menghitung gaya output ($F_2$).</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 print-border">
+                        <div><span class="text-slate-400 block">Luas Piston Kecil ($A_1$):</span> <input type="text" id="lkpd-p3-a1" class="w-full bg-transparent font-bold text-sky-300 focus:outline-none"></div>
+                        <div><span class="text-slate-400 block">Luas Piston Besar ($A_2$):</span> <input type="text" id="lkpd-p3-a2" class="w-full bg-transparent font-bold text-sky-300 focus:outline-none"></div>
+                        <div><span class="text-slate-400 block">Gaya Input ($F_1$):</span> <input type="text" id="lkpd-p3-f1" class="w-full bg-transparent font-bold text-amber-300 focus:outline-none"></div>
+                        <div><span class="text-slate-400 block">Gaya Output ($F_2$):</span> <input type="text" id="lkpd-p3-f2" class="w-full bg-transparent font-bold text-emerald-400 focus:outline-none"></div>
+                    </div>
+
+                    <div class="text-xs space-y-2 pt-2">
+                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 3:</label>
+                        <p class="text-slate-400">3. Jelaskan mengapa gaya input kecil ($F_1$) pada penampang $A_1$ mampu mengangkat beban yang jauh lebih berat pada penampang $A_2$ berdasarkan Hukum Pascal!</p>
+                        <textarea id="lkpd-q3" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
+                    </div>
+                </div>
+
+                <!-- Bagian 4: Hukum Archimedes -->
+                <div class="mb-8 space-y-3">
+                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
+                        <span>D. Percobaan 4: Hukum Archimedes</span>
+                    </h3>
+                    <p class="text-xs text-slate-300">Tujuan: Menentukan hubungan Gaya Apung ($F_a$) dengan berat fluida yang dipindahkan serta kondisi terapung/melayang/tenggelam.</p>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 print-border">
+                        <div><span class="text-slate-400 block">Massa Jenis Benda ($\rho_b$):</span> <input type="text" id="lkpd-p4-rhob" class="w-full bg-transparent font-bold text-sky-300 focus:outline-none"></div>
+                        <div><span class="text-slate-400 block">Berat Udara ($W$):</span> <input type="text" id="lkpd-p4-w" class="w-full bg-transparent font-bold text-amber-300 focus:outline-none"></div>
+                        <div><span class="text-slate-400 block">Gaya Apung ($F_a$):</span> <input type="text" id="lkpd-p4-fa" class="w-full bg-transparent font-bold text-emerald-400 focus:outline-none"></div>
+                        <div><span class="text-slate-400 block">Berat Semu ($W'$):</span> <input type="text" id="lkpd-p4-wapp" class="w-full bg-transparent font-bold text-indigo-300 focus:outline-none"></div>
+                    </div>
+
+                    <div class="text-xs space-y-2 pt-2">
+                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 4:</label>
+                        <p class="text-slate-400">4. Kapan suatu benda dikatakan terapung, melayang, dan tenggelam jika ditinjau dari perbandingan massa jenis benda ($\rho_b$) dengan massa jenis fluida ($\rho_f$)?</p>
+                        <textarea id="lkpd-q4" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
+                    </div>
+                </div>
+
+                <!-- Kesimpulan Umum LKPD -->
+                <div class="mb-6 space-y-2 border-t border-slate-700 pt-4">
+                    <label class="block font-bold text-amber-400 text-xs uppercase tracking-wider">Kesimpulan Umum Praktikum:</label>
+                    <textarea id="lkpd-kesimpulan" rows="3" placeholder="Tuliskan kesimpulan umum hasil praktikum Mekanika Fluida yang telah dilakukan..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
+                </div>
+
+                <!-- Tanda Tangan Cetak -->
+                <div class="mt-8 pt-4 border-t border-slate-700 grid grid-cols-2 text-center text-xs text-slate-300 hidden print:grid">
+                    <div>
+                        <p>Paraf Siswa / Ketua Kelompok</p>
+                        <br><br><br>
+                        <p>( .................................................... )</p>
+                    </div>
+                    <div>
+                        <p>Nilai / Paraf Guru Fisika</p>
+                        <br><br><br>
+                        <p>( .................................................... )</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Identitas Penyusun -->
+    <div id="modal-identitas" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel bg-slate-900 max-w-md w-full rounded-2xl p-6 border border-slate-700 shadow-2xl relative">
+            <button onclick="closeModal('modal-identitas')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-3 bg-sky-600/30 text-sky-400 rounded-xl border border-sky-500/40">
+                    <i class="fa-solid fa-user-graduate text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">Identitas Penyusun</h3>
+                    <p class="text-xs text-slate-400">Pengembang Media Pembelajaran Virtual</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-sm text-slate-300 border-t border-b border-slate-800 py-4 my-2">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Judul Media:</span>
+                    <span class="font-semibold text-sky-300">Simulator Mekanika Fluida</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Mata Pelajaran:</span>
+                    <span class="font-semibold text-slate-200">Fisika SMP / SMA</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Materi Utama:</span>
+                    <span class="font-semibold text-slate-200">Tekanan Hidrostatis & Fluida</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Tim Penyusun:</span>
+                    <span class="font-semibold text-emerald-400">Pengembang Laboratorium Fisika</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Versi Simulator:</span>
+                    <span class="font-mono text-xs bg-slate-800 px-2 py-0.5 rounded text-sky-400">v2.5 Interaktif</span>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-400 text-center mt-3">
+                Dirancang untuk memfasilitasi konsep saintifik melalui eksperimen berbasis visualisasi numerik dan animasi fisika.
+            </p>
+            <button onclick="closeModal('modal-identitas')" class="mt-4 w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Petunjuk / Panduan -->
+    <div id="modal-petunjuk" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel bg-slate-900 max-w-lg w-full rounded-2xl p-6 border border-slate-700 shadow-2xl relative">
+            <button onclick="closeModal('modal-petunjuk')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-3 bg-amber-600/30 text-amber-400 rounded-xl border border-amber-500/40">
+                    <i class="fa-solid fa-book-open text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">Panduan Penggunaan</h3>
+                    <p class="text-xs text-slate-400">Petunjuk Praktikum Virtual</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                    <span class="font-bold text-sky-400 block mb-1">Percobaan 1: Pancaran 3 Lubang</span>
+                    <p>Atur tinggi air dalam botol. Buka atau tutup masing-masing lubang (Top, Mid, Low) untuk mengamati beda jarak pancaran air horizontal yang dihasilkan.</p>
+                </div>
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                    <span class="font-bold text-sky-400 block mb-1">Percobaan 2: Pengaruh Jenis Zat Cair</span>
+                    <p>Ganti jenis cairan (Minyak, Air, Gliserin, Raksa) dan geser kedalaman sensor untuk membaca perubahan tekanan hidrostatis pada manometer digital.</p>
+                </div>
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                    <span class="font-bold text-sky-400 block mb-1">Percobaan 3: Hukum Pascal</span>
+                    <p>Ubah luas penampang piston A1 dan A2. Berikan gaya F1 lalu tekan piston untuk melihat transfer gaya dan pengangkatan beban.</p>
+                </div>
+                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                    <span class="font-bold text-sky-400 block mb-1">Percobaan 4: Hukum Archimedes</span>
+                    <p>Atur massa dan volume benda. Turunkan benda ke dalam wadah fluida untuk mengamati perubahan skala berat pada neraca pegas dan air yang tumpah.</p>
+                </div>
+            </div>
+
+            <button onclick="closeModal('modal-petunjuk')" class="mt-4 w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs transition">
+                Saya Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800/80 py-3 text-center text-xs text-slate-500">
+        <p>Lab Virtual Fisika Interaktif - Simulasi Konsep Tekanan & Mekanika Fluida</p>
+    </footer>
+
+    <script>
+        // State Global Simulator
+        var currentTab = 1;
+        var animFrames = {};
+
+        // Tab 1 Variables
+        var t1_waterLevel = 35; // cm (range 0 - 40)
+        var t1_holes = { 1: true, 2: true, 3: true }; // Status terbuka
+        var t1_holeY = { 1: 30, 2: 20, 3: 10 }; // cm dari dasar botol
+        var t1_autoRefill = false;
+
+        // Tab 2 Variables
+        var t2_rho = 1000;
+        var t2_depth = 0.5; // meter
+        var t2_gravity = 9.8; // m/s^2
+        var t2_fluidColor = "#0284c7";
+        var t2_fluidName = "Air Murni";
+
+        // Tab 3 Variables
+        var t3_a1 = 2; // cm2
+        var t3_a2 = 20; // cm2
+        var t3_f1 = 100; // N
+        var t3_pressProgress = 0; // 0 to 1 for animation
+        var t3_isPressing = false;
+
+        // Tab 4 Variables
+        var t4_mass = 2.0; // kg
+        var t4_vol = 2500; // cm3 -> 0.0025 m3
+        var t4_rhoFluid = 1000; // kg/m3
+        var t4_submergePos = 50; // % lowered
+        var t4_fluidColor = "#0284c7";
+
+        // Function Navigation Modal
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // Tab Switcher Update Including LKPD (Tab 5)
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            for (var i = 1; i <= 5; i++) {
+                var btn = document.getElementById('tab-btn-' + i);
+                var sec = document.getElementById('tab-' + i);
+                if (btn && sec) {
+                    if (i === tabIndex) {
+                        btn.className = "tab-active px-4 py-2.5 rounded-t-lg transition flex items-center gap-2";
+                        sec.classList.remove('hidden');
+                    } else {
+                        btn.className = "tab-inactive px-4 py-2.5 rounded-t-lg transition flex items-center gap-2";
+                        sec.classList.add('hidden');
+                    }
+                }
+            }
+            if (tabIndex === 5) {
+                autoFillLKPDFromSim();
+            }
+            resizeAllCanvases();
+        }
+
+        // Fungsi Auto-Fill Data Simulator ke LKPD
+        function autoFillLKPDFromSim() {
+            // Percobaan 1
+            document.getElementById('lkpd-p1-h1').value = (t1_waterLevel - 30 > 0 ? (t1_waterLevel - 30).toFixed(1) : 0) + " cm";
+            document.getElementById('lkpd-p1-h2').value = (t1_waterLevel - 20 > 0 ? (t1_waterLevel - 20).toFixed(1) : 0) + " cm";
+            document.getElementById('lkpd-p1-h3').value = (t1_waterLevel - 10 > 0 ? (t1_waterLevel - 10).toFixed(1) : 0) + " cm";
+
+            document.getElementById('lkpd-p1-x1').value = document.getElementById('p1-x1').innerText;
+            document.getElementById('lkpd-p1-x2').value = document.getElementById('p1-x2').innerText;
+            document.getElementById('lkpd-p1-x3').value = document.getElementById('p1-x3').innerText;
+
+            // Percobaan 2
+            document.getElementById('lkpd-p2-f1-h').value = (t2_depth * 100).toFixed(0) + " cm";
+            document.getElementById('lkpd-p2-f1-p').value = document.getElementById('out-t2-ph').innerText;
+            document.getElementById('lkpd-p2-f2-h').value = (t2_depth * 100).toFixed(0) + " cm";
+
+            // Percobaan 3
+            document.getElementById('lkpd-p3-a1').value = t3_a1 + " cm²";
+            document.getElementById('lkpd-p3-a2').value = t3_a2 + " cm²";
+            document.getElementById('lkpd-p3-f1').value = t3_f1 + " N";
+            document.getElementById('lkpd-p3-f2').value = document.getElementById('out-t3-f2').innerText;
+
+            // Percobaan 4
+            document.getElementById('lkpd-p4-rhob').value = document.getElementById('out-t4-rhob').innerText;
+            document.getElementById('lkpd-p4-w').value = document.getElementById('out-t4-w').innerText;
+            document.getElementById('lkpd-p4-fa').value = document.getElementById('out-t4-fa').innerText;
+            document.getElementById('lkpd-p4-wapp').value = document.getElementById('out-t4-wapp').innerText;
+        }
+
+        // Fungsi Simpan Draf LKPD ke LocalStorage
+        function saveLKPDDraft() {
+            var fields = [
+                'lkpd-nama', 'lkpd-kelas', 'lkpd-sekolah',
+                'lkpd-q1', 'lkpd-q2', 'lkpd-q3', 'lkpd-q4', 'lkpd-kesimpulan'
+            ];
+            fields.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) localStorage.setItem(id, el.value);
+            });
+            alert('Draf LKPD berhasil disimpan di memori browser!');
+        }
+
+        // Fungsi Load Draf LKPD
+        function loadLKPDDraft() {
+            var fields = [
+                'lkpd-nama', 'lkpd-kelas', 'lkpd-sekolah',
+                'lkpd-q1', 'lkpd-q2', 'lkpd-q3', 'lkpd-q4', 'lkpd-kesimpulan'
+            ];
+            fields.forEach(function(id) {
+                var el = document.getElementById(id);
+                var saved = localStorage.getItem(id);
+                if (el && saved) el.value = saved;
+            });
+        }
+
+        // Fungsi Cetak / Download PDF LKPD
+        function printLKPD() {
+            window.print();
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', resizeAllCanvases);
+
+        function resizeAllCanvases() {
+            var canvases = ['canvas-tab1', 'canvas-tab2', 'canvas-tab3', 'canvas-tab4'];
+            canvases.forEach(function(id) {
+                var c = document.getElementById(id);
+                if (c && c.parentElement) {
+                    c.width = c.parentElement.clientWidth;
+                    c.height = c.parentElement.clientHeight;
+                }
+            });
+        }
+
+        // ... existing code for renderTab1, renderTab2, renderTab3, renderTab4, mainLoop ...
+
+        // On Load Initialization
+        window.onload = function() {
+            resizeAllCanvases();
+            updateFluidTab2();
+            updateTab3Calculations();
+            updateTab4Calculations();
+            loadLKPDDraft();
+            mainLoop();
+        };
+    </script>
+</body>
+</html>
