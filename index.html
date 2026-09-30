@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
+            background-color: #0b1329;
             color: #f8fafc;
         }
         .tab-active {
@@ -21,6 +21,7 @@
             color: #ffffff;
             border-bottom: 3px solid #38bdf8;
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
         }
         .tab-inactive {
             background-color: #1e293b;
@@ -32,20 +33,18 @@
         }
         canvas {
             touch-action: none;
-            background: linear-gradient(to bottom, #0f172a, #1e293b);
+            background: radial-gradient(circle at center, #111d33 0%, #080d1a 100%);
         }
-        /* Custom slider styling */
         input[type=range] {
             accent-color: #38bdf8;
         }
-        /* Glassmorphism panel */
         .glass-panel {
             background: rgba(30, 41, 59, 0.75);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
-        /* Media Print Styling untuk Cetak & Download PDF LKPD */
+        /* Media Print Styling untuk Cetak LKPD */
         @media print {
             body {
                 background-color: #ffffff !important;
@@ -81,36 +80,33 @@
                 margin-bottom: 15px !important;
                 padding-bottom: 10px !important;
             }
-            .page-break {
-                page-break-before: always;
-            }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between select-none">
 
     <!-- Header Utama -->
-    <header class="bg-slate-900 border-b border-slate-800 shadow-lg sticky top-0 z-50">
+    <header class="bg-slate-900/90 border-b border-slate-800 shadow-xl sticky top-0 z-50 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <div class="p-2.5 bg-sky-600/20 border border-sky-500/30 rounded-xl text-sky-400">
+                <div class="p-2.5 bg-sky-600/20 border border-sky-500/30 rounded-xl text-sky-400 shadow-inner">
                     <i class="fa-solid fa-flask-vial text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+                    <h1 class="text-xl font-extrabold bg-gradient-to-r from-sky-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
                         Lab Virtual Mekanika Fluida
                     </h1>
                     <p class="text-xs text-slate-400">Tekanan Hidrostatis, Hukum Pascal, & Hukum Archimedes</p>
                 </div>
             </div>
 
-            <!-- Tombol Identitas & Bantuan -->
+            <!-- Tombol Bantuan & Identitas -->
             <div class="flex items-center gap-2">
-                <button id="btn-identitas" onclick="openModal('modal-identitas')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sky-300 text-xs rounded-lg transition flex items-center gap-2">
-                    <i class="fa-solid fa-id-card"></i> Identitas Penyusun
+                <button id="btn-identitas" onclick="openModal('modal-identitas')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sky-300 text-xs rounded-lg transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-id-card"></i> Info
                 </button>
-                <button id="btn-petunjuk" onclick="openModal('modal-petunjuk')" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg transition flex items-center gap-2 shadow-md shadow-sky-900/30">
-                    <i class="fa-solid fa-circle-question"></i> Panduan
+                <button id="btn-petunjuk" onclick="openModal('modal-petunjuk')" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-2 shadow-md shadow-sky-900/40">
+                    <i class="fa-solid fa-circle-question"></i> Panduan Lab
                 </button>
             </div>
         </div>
@@ -140,66 +136,62 @@
 
         <!-- ================= PERCOBAAN 1: BOTOL 3 LUBANG ================= -->
         <section id="tab-1" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Visualisasi Canvas -->
-            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
-                <div class="w-full flex justify-between items-center mb-2 px-2">
-                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
-                        <i class="fa-solid fa-eye"></i> Visualisasi Pancaran Air
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-2xl relative">
+                <div class="w-full flex justify-between items-center mb-2 px-2 z-10">
+                    <span class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-eye text-sky-300"></i> Visualisasi Pancaran Air Realistis (Torricelli)
                     </span>
-                    <span class="text-xs text-slate-400">Tekanan terbesar di lubang paling bawah memancarkan air paling jauh</span>
+                    <span class="text-xs text-slate-400 bg-slate-900/60 px-3 py-1 rounded-full border border-slate-800">
+                        Lubang Bawah (C): Tekanan Paling Besar & Jarak Pancar Paling Jauh
+                    </span>
                 </div>
-                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                <div class="w-full h-[450px] relative rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-inner">
                     <canvas id="canvas-tab1" class="w-full h-full block"></canvas>
                 </div>
             </div>
 
-            <!-- Panel Kontrol & Data Percobaan 1 -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
                 <div>
                     <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
                         <i class="fa-solid fa-sliders text-sky-400"></i> Kontrol & Parameter
                     </h3>
 
-                    <!-- Tinggi Air dalam Botol -->
                     <div class="mb-4">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Tinggi Air dalam Botol (H):</span>
-                            <span id="val-t1-height" class="text-sky-400 font-bold">35 cm</span>
+                            <span id="val-t1-height" class="text-sky-400 font-bold font-mono">35.0 cm</span>
                         </div>
-                        <input type="range" id="slider-t1-height" min="10" max="40" step="1" value="35" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="slider-t1-height" min="10" max="40" step="0.5" value="35" oninput="updateTab1Height(this.value)" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                         <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                             <span>10 cm</span>
                             <span>Maksimal: 40 cm</span>
                         </div>
                     </div>
 
-                    <!-- Saklar Sumbat Lubang -->
-                    <div class="mb-4 bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
-                        <span class="text-xs font-semibold text-slate-300 block mb-2">Status Lubang (Buka / Tutup):</span>
+                    <div class="mb-4 bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 shadow-sm">
+                        <span class="text-xs font-semibold text-slate-300 block mb-2">Status Sumbat Lubang:</span>
                         <div class="grid grid-cols-3 gap-2">
-                            <button id="btn-hole-1" onclick="toggleHole(1)" class="px-2 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition">
-                                Lubang Top (A)
+                            <button id="btn-hole-1" onclick="toggleHole(1)" class="px-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-circle-play text-[10px]"></i> Lubang A
                             </button>
-                            <button id="btn-hole-2" onclick="toggleHole(2)" class="px-2 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition">
-                                Lubang Mid (B)
+                            <button id="btn-hole-2" onclick="toggleHole(2)" class="px-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-circle-play text-[10px]"></i> Lubang B
                             </button>
-                            <button id="btn-hole-3" onclick="toggleHole(3)" class="px-2 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition">
-                                Lubang Low (C)
+                            <button id="btn-hole-3" onclick="toggleHole(3)" class="px-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-circle-play text-[10px]"></i> Lubang C
                             </button>
                         </div>
                     </div>
 
-                    <!-- Pilihan Isi Ulang / Otomatis -->
                     <div class="flex gap-2 mb-4">
-                        <button onclick="fillWaterTab1()" class="flex-1 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl transition flex justify-center items-center gap-2 shadow-lg shadow-sky-900/40">
+                        <button onclick="fillWaterTab1()" class="flex-1 py-2.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl transition flex justify-center items-center gap-2 shadow-lg shadow-sky-900/40">
                             <i class="fa-solid fa-faucet-drip"></i> Isi Air Penuh
                         </button>
-                        <button id="btn-auto-refill" onclick="toggleAutoRefill()" class="py-2 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition">
+                        <button id="btn-auto-refill" onclick="toggleAutoRefill()" class="py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition">
                             Aliran Konstan: OFF
                         </button>
                     </div>
 
-                    <!-- Tabel Data Hasil Pengamatan -->
                     <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
                         <div class="font-bold text-sky-400 border-b border-slate-800 pb-1 flex justify-between">
                             <span>Posisi Lubang</span>
@@ -208,80 +200,75 @@
                         </div>
                         <div class="flex justify-between text-slate-300">
                             <span class="font-semibold text-amber-400">Atas (A - 30cm)</span>
-                            <span id="p1-h1">5 cm</span>
-                            <span id="p1-x1" class="font-mono text-sky-300">0 cm</span>
+                            <span id="p1-h1" class="font-mono">5.0 cm</span>
+                            <span id="p1-x1" class="font-mono text-amber-300 font-bold">29.1 cm</span>
                         </div>
                         <div class="flex justify-between text-slate-300">
                             <span class="font-semibold text-emerald-400">Tengah (B - 20cm)</span>
-                            <span id="p1-h2">15 cm</span>
-                            <span id="p1-x2" class="font-mono text-sky-300">0 cm</span>
+                            <span id="p1-h2" class="font-mono">15.0 cm</span>
+                            <span id="p1-x2" class="font-mono text-emerald-300 font-bold">48.0 cm</span>
                         </div>
                         <div class="flex justify-between text-slate-300">
                             <span class="font-semibold text-indigo-400">Bawah (C - 10cm)</span>
-                            <span id="p1-h3">25 cm</span>
-                            <span id="p1-x3" class="font-mono text-sky-300">0 cm</span>
+                            <span id="p1-h3" class="font-mono">25.0 cm</span>
+                            <span id="p1-x3" class="font-mono text-sky-300 font-extrabold">59.2 cm</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Rumus Ringkas -->
                 <div class="p-3 bg-sky-950/40 border border-sky-800/40 rounded-xl text-[11px] text-sky-200/90">
-                    <p class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-square-root-variable"></i> Persamaan Torricelli:</p>
-                    <p>Tekanan Hidrostatis: P = ρ x g x h</p>
+                    <p class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-square-root-variable"></i> Formulasi Torricelli:</p>
                     <p>Kecepatan Keluar: v = √(2 x g x h)</p>
-                    <p class="text-[10px] text-slate-300 mt-1">*Makin dalam kedalaman (h), tekanan P makin besar, kecepatan keluar v makin tinggi, sehingga jarak pancaran x paling jauh di lubang bawah.</p>
+                    <p>Jarak Pancaran Lantai: x = 2 x √(h x y_total)</p>
                 </div>
             </div>
         </section>
 
         <!-- ================= PERCOBAAN 2: PENGARUH JENIS ZAT CAIR ================= -->
         <section id="tab-2" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
-            <!-- Visualisasi Canvas -->
-            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
-                <div class="w-full flex justify-between items-center mb-2 px-2">
-                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
-                        <i class="fa-solid fa-vial"></i> Pengukuran Tekanan Hidrostatis dengan Sensor Manometer
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-2xl relative">
+                <div class="w-full flex justify-between items-center mb-2 px-2 z-10">
+                    <span class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-vial text-sky-300"></i> Manometer Digital & Bejana Berskala
                     </span>
-                    <span class="text-xs text-slate-400">Geser atau Atur Kedalaman Sensor</span>
+                    <span class="text-xs text-slate-400 bg-slate-900/60 px-3 py-1 rounded-full border border-slate-800">
+                        Geser Slider Kedalaman Sensor (h)
+                    </span>
                 </div>
-                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                <div class="w-full h-[450px] relative rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-inner">
                     <canvas id="canvas-tab2" class="w-full h-full block"></canvas>
                 </div>
             </div>
 
-            <!-- Panel Kontrol Percobaan 2 -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
                 <div>
                     <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
                         <i class="fa-solid fa-flask text-sky-400"></i> Karakteristik Fluida
                     </h3>
 
-                    <!-- Pilihan Jenis Fluida -->
                     <div class="mb-4">
                         <label class="text-xs font-medium text-slate-300 block mb-1">Pilih Jenis Zat Cair:</label>
                         <select id="select-t2-fluid" onchange="updateFluidTab2()" class="w-full bg-slate-800 border border-slate-700 text-sky-300 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-sky-500">
                             <option value="1000" data-color="#0284c7" data-name="Air Murni">Air Murni (ρ = 1000 kg/m³)</option>
                             <option value="800" data-color="#eab308" data-name="Minyak Goreng">Minyak Goreng (ρ = 800 kg/m³)</option>
-                            <option value="1030" data-color="#38bdf8" data-name="Air Garam / Laut">Air Garam (ρ = 1030 kg/m³)</option>
+                            <option value="1030" data-color="#06b6d4" data-name="Air Garam / Laut">Air Garam (ρ = 1030 kg/m³)</option>
                             <option value="1260" data-color="#a855f7" data-name="Gliserin">Gliserin (ρ = 1260 kg/m³)</option>
                             <option value="13600" data-color="#94a3b8" data-name="Raksa">Raksa (ρ = 13600 kg/m³)</option>
                         </select>
                     </div>
 
-                    <!-- Slider Kedalaman Sensor (h) -->
                     <div class="mb-4">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Kedalaman Sensor (h):</span>
-                            <span id="val-t2-depth" class="text-sky-400 font-bold">50 cm</span>
+                            <span id="val-t2-depth" class="text-sky-400 font-bold font-mono">50 cm</span>
                         </div>
                         <input type="range" id="slider-t2-depth" min="5" max="100" step="1" value="50" oninput="updateTab2Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Slider Percepatan Gravitasi (g) -->
                     <div class="mb-4">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Percepatan Gravitasi (g):</span>
-                            <span id="val-t2-gravity" class="text-sky-400 font-bold">9.8 m/s²</span>
+                            <span id="val-t2-gravity" class="text-sky-400 font-bold font-mono">9.8 m/s²</span>
                         </div>
                         <input type="range" id="slider-t2-gravity" min="1.6" max="25" step="0.1" value="9.8" oninput="updateTab2Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                         <div class="flex justify-between text-[10px] text-slate-400 mt-1">
@@ -291,7 +278,6 @@
                         </div>
                     </div>
 
-                    <!-- Hasil Pengukuran Manometer Digital -->
                     <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-3">
                         <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-1">
                             Hasil Pengukuran Digital
@@ -313,61 +299,57 @@
 
                 <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300">
                     <p class="font-semibold text-sky-400 mb-1"><i class="fa-solid fa-lightbulb"></i> Kesimpulan Percobaan 2:</p>
-                    <p class="text-[11px] leading-relaxed">Makin besar masa jenis zat cair (ρ) dan makin dalam posisi titik (h), maka tekanan hidrostatis (P) akan bernilai makin besar.</p>
+                    <p class="text-[11px] leading-relaxed">Makin besar massa jenis fluida (ρ) dan kedalaman (h), tekanan hidrostatis (Ph) bernilai makin tinggi.</p>
                 </div>
             </div>
         </section>
 
         <!-- ================= PERCOBAAN 3: HUKUM PASCAL ================= -->
         <section id="tab-3" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
-            <!-- Visualisasi Canvas Dongkrak Hidrolik -->
-            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
-                <div class="w-full flex justify-between items-center mb-2 px-2">
-                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
-                        <i class="fa-solid fa-compress"></i> Simulator Dongkrak Hidrolik
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-2xl relative">
+                <div class="w-full flex justify-between items-center mb-2 px-2 z-10">
+                    <span class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-compress text-sky-300"></i> Simulator Dongkrak Hidrolik Presisi
                     </span>
-                    <span class="text-xs text-slate-400">Tekanan Diteruskan ke Segala Arah Sama Besar</span>
+                    <span class="text-xs text-slate-400 bg-slate-900/60 px-3 py-1 rounded-full border border-slate-800">
+                        Tekanan Diteruskan ke Segala Arah Sama Besar
+                    </span>
                 </div>
-                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                <div class="w-full h-[450px] relative rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-inner">
                     <canvas id="canvas-tab3" class="w-full h-full block"></canvas>
                 </div>
             </div>
 
-            <!-- Panel Kontrol Percobaan 3 -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
                 <div>
                     <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
                         <i class="fa-solid fa-gears text-sky-400"></i> Kontrol Penampang & Gaya
                     </h3>
 
-                    <!-- Luas Penampang 1 (A1) -->
                     <div class="mb-3">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Luas Piston Kecil (A1):</span>
-                            <span id="val-t3-a1" class="text-sky-400 font-bold">2 cm²</span>
+                            <span id="val-t3-a1" class="text-sky-400 font-bold font-mono">2 cm²</span>
                         </div>
                         <input type="range" id="slider-t3-a1" min="1" max="10" step="1" value="2" oninput="updateTab3Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Luas Penampang 2 (A2) -->
                     <div class="mb-3">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Luas Piston Besar (A2):</span>
-                            <span id="val-t3-a2" class="text-sky-400 font-bold">20 cm²</span>
+                            <span id="val-t3-a2" class="text-sky-400 font-bold font-mono">20 cm²</span>
                         </div>
-                        <input type="range" id="slider-t3-a12" min="10" max="100" step="2" value="20" oninput="updateTab3Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="slider-t3-a2" min="10" max="100" step="2" value="20" oninput="updateTab3Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Gaya Input F1 -->
                     <div class="mb-4">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Gaya Tekan Input (F1):</span>
-                            <span id="val-t3-f1" class="text-sky-400 font-bold">100 N</span>
+                            <span id="val-t3-f1" class="text-sky-400 font-bold font-mono">100 N</span>
                         </div>
                         <input type="range" id="slider-t3-f1" min="10" max="500" step="10" value="100" oninput="updateTab3Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Tombol Tekan Piston -->
                     <div class="flex gap-2 mb-4">
                         <button onclick="pressPistonPascal()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition shadow-lg shadow-emerald-900/40 flex justify-center items-center gap-2">
                             <i class="fa-solid fa-hand-back-fist"></i> Tekan Piston Kecil
@@ -377,7 +359,6 @@
                         </button>
                     </div>
 
-                    <!-- Data Output & Perhitungan -->
                     <div class="bg-slate-900/90 rounded-xl p-3.5 border border-slate-800 space-y-2 text-xs">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-1">
                             <span class="text-slate-400">Keuntungan Mekanis (A2 / A1):</span>
@@ -397,54 +378,48 @@
                 <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-[11px] text-slate-300">
                     <p class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-equals"></i> Formulasi Hukum Pascal:</p>
                     <p class="font-mono text-center bg-slate-950 p-1 rounded my-1 text-sky-300">F1 / A1 = F2 / A2</p>
-                    <p>Gaya kecil pada penampang kecil mampu menghasilkan gaya yang jauh lebih besar pada penampang luas.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ================= PERCOBAAN 4: HUKUM ARCHIMEDES ================= -->
+        <!-- ================= PERCOBAAN 4: HUKUM ARCHIMEDES (ENHANCED) ================= -->
         <section id="tab-4" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
-            <!-- Visualisasi Canvas Benda dalam Zat Cair -->
-            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-xl">
-                <div class="w-full flex justify-between items-center mb-2 px-2">
-                    <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
-                        <i class="fa-solid fa-box-archive"></i> Neraca Pegas & Bejana Tumpahan
+            <div class="lg:col-span-2 glass-panel p-4 rounded-2xl flex flex-col items-center justify-between shadow-2xl relative">
+                <div class="w-full flex justify-between items-center mb-2 px-2 z-10">
+                    <span class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-box-archive text-sky-300"></i> Neraca Pegas & Bejana Berpancur
                     </span>
-                    <span id="archimedes-status-tag" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold">
+                    <span id="archimedes-status-tag" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold shadow-sm">
                         Status: Terapung
                     </span>
                 </div>
-                <div class="w-full h-[420px] relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                <div class="w-full h-[450px] relative rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-inner">
                     <canvas id="canvas-tab4" class="w-full h-full block"></canvas>
                 </div>
             </div>
 
-            <!-- Panel Kontrol Percobaan 4 -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col gap-4 shadow-xl justify-between">
                 <div>
                     <h3 class="text-base font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
                         <i class="fa-solid fa-scale-balanced text-sky-400"></i> Variabel Benda & Fluida
                     </h3>
 
-                    <!-- Massa Benda -->
                     <div class="mb-3">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Massa Benda (m):</span>
-                            <span id="val-t4-mass" class="text-sky-400 font-bold">2.0 kg</span>
+                            <span id="val-t4-mass" class="text-sky-400 font-bold font-mono">2.0 kg</span>
                         </div>
                         <input type="range" id="slider-t4-mass" min="0.5" max="10.0" step="0.5" value="2.0" oninput="updateTab4Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Volume Benda -->
                     <div class="mb-3">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Volume Benda (V):</span>
-                            <span id="val-t4-vol" class="text-sky-400 font-bold">2500 cm³</span>
+                            <span id="val-t4-vol" class="text-sky-400 font-bold font-mono">2500 cm³</span>
                         </div>
                         <input type="range" id="slider-t4-vol" min="500" max="5000" step="100" value="2500" oninput="updateTab4Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Massa Jenis Fluida -->
                     <div class="mb-4">
                         <label class="text-xs font-medium text-slate-300 block mb-1">Fluida Pencelup:</label>
                         <select id="select-t4-fluid" onchange="updateTab4Calculations()" class="w-full bg-slate-800 border border-slate-700 text-sky-300 rounded-xl p-2 text-xs font-semibold focus:outline-none">
@@ -455,39 +430,41 @@
                         </select>
                     </div>
 
-                    <!-- Posisi Pencelupan (Tali Neraca) -->
                     <div class="mb-4">
                         <div class="flex justify-between text-xs mb-1">
                             <span class="text-slate-300 font-medium">Posisi Turun Benda:</span>
-                            <span id="val-t4-pos" class="text-sky-400 font-bold">50 %</span>
+                            <span id="val-t4-pos" class="text-sky-400 font-bold font-mono">50 %</span>
                         </div>
                         <input type="range" id="slider-t4-pos" min="0" max="100" step="1" value="50" oninput="updateTab4Calculations()" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Ringkasan Gaya Archimedes -->
                     <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
                         <div class="flex justify-between">
                             <span class="text-slate-400">Massa Jenis Benda (ρb):</span>
-                            <span id="out-t4-rhob" class="font-bold text-sky-300">800 kg/m³</span>
+                            <span id="out-t4-rhob" class="font-bold text-sky-300 font-mono">800 kg/m³</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-slate-400">Berat Asli di Udara (W):</span>
-                            <span id="out-t4-w" class="font-bold text-amber-400">19.6 N</span>
+                            <span id="out-t4-w" class="font-bold text-amber-400 font-mono">19.6 N</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-slate-400">Gaya Apung (Fa):</span>
-                            <span id="out-t4-fa" class="font-bold text-emerald-400">19.6 N</span>
+                            <span id="out-t4-fa" class="font-bold text-emerald-400 font-mono">19.6 N</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Volume Air Tumpah:</span>
+                            <span id="out-t4-vspill" class="font-bold text-cyan-300 font-mono">2500 cm³</span>
                         </div>
                         <div class="flex justify-between border-t border-slate-800 pt-1">
-                            <span class="text-slate-300 font-semibold">Berat Semu (W' = W - Fa):</span>
-                            <span id="out-t4-wapp" class="font-bold text-sky-400">0.0 N</span>
+                            <span class="text-slate-300 font-semibold">Berat Semu Neraca (W'):</span>
+                            <span id="out-t4-wapp" class="font-bold text-sky-400 font-mono">0.0 N</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-[11px] text-slate-300">
                     <p class="font-bold text-sky-400 mb-1"><i class="fa-solid fa-water"></i> Hukum Archimedes:</p>
-                    <p>Gaya ke atas (Fa) sama dengan berat fluida yang dipindahkan oleh bagian benda yang tercelup.</p>
+                    <p>Gaya apung ke atas (Fa) sama dengan berat fluida yang dipindahkan (disiramkan ke gelas ukur penampung).</p>
                 </div>
             </div>
         </section>
@@ -495,452 +472,851 @@
         <!-- ================= TAB 5: LKPD INTERAKTIF & EXPORT PDF ================= -->
         <section id="tab-5" class="hidden">
             <div id="lkpd-printable-area" class="glass-panel p-6 rounded-2xl shadow-2xl max-w-5xl mx-auto bg-slate-900 border border-slate-800">
-                
-                <!-- Header LKPD -->
-                <div class="print-header flex flex-col md:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="p-3 bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30 no-print">
-                            <i class="fa-solid fa-file-signature text-3xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-white uppercase tracking-wide">LEMBAR KERJA PESERTA DIDIK (LKPD)</h2>
-                            <p class="text-xs text-sky-400 font-semibold">Praktikum Virtual Mekanika Fluida & Tekanan Hidrostatis</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Tombol Aksi LKPD (Tidak ikut tercetak) -->
-                    <div class="no-print mt-4 md:mt-0 flex flex-wrap gap-2">
-                        <button onclick="autoFillLKPDFromSim()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2 shadow-lg shadow-sky-900/40">
-                            <i class="fa-solid fa-rotate"></i> Salin Data dari Simulasi
-                        </button>
-                        <button onclick="saveLKPDDraft()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-900/40">
-                            <i class="fa-solid fa-floppy-disk"></i> Simpan Draf
-                        </button>
-                        <button onclick="printLKPD()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-900/40">
-                            <i class="fa-solid fa-print"></i> Download PDF / Cetak
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Identitas Siswa -->
-                <div class="mb-6 p-4 bg-slate-800/80 rounded-xl border border-slate-700 print-border">
-                    <h3 class="text-sm font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user-pen"></i> Identitas Peserta Didik / Kelompok
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                        <div>
-                            <label class="block text-slate-300 font-medium mb-1">Nama Lengkap / Anggota:</label>
-                            <input type="text" id="lkpd-nama" placeholder="Tuliskan nama anggota..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500">
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 font-medium mb-1">Kelas / Kelompok:</label>
-                            <input type="text" id="lkpd-kelas" placeholder="Contoh: XI-MIPA 1 / Kelompok 3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500">
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 font-medium mb-1">Tanggal & Sekolah:</label>
-                            <input type="text" id="lkpd-sekolah" placeholder="Nama Sekolah / Tanggal" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bagian 1: Percobaan Pancaran 3 Lubang -->
-                <div class="mb-8 space-y-3">
-                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
-                        <span>A. Percobaan 1: Tekanan Hidrostatis (Pancaran 3 Lubang)</span>
-                    </h3>
-                    <p class="text-xs text-slate-300">Tujuan: Menganalisis hubungan antara kedalaman zat cair dengan jarak pancaran air (x) dan kecepatan keluarnya air.</p>
-                    
-                    <!-- Tabel Hasil Pengamatan Percobaan 1 -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left text-slate-300 border border-slate-700 print-border">
-                            <thead class="bg-slate-800 text-sky-300 font-semibold">
-                                <tr>
-                                    <th class="p-2 border border-slate-700">Posisi Lubang</th>
-                                    <th class="p-2 border border-slate-700">Ketinggian Lubang (y)</th>
-                                    <th class="p-2 border border-slate-700">Kedalaman (h)</th>
-                                    <th class="p-2 border border-slate-700">Jarak Pancaran Terukur (x)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-slate-900/50">
-                                    <td class="p-2 border border-slate-700 font-semibold text-amber-400">Atas (A)</td>
-                                    <td class="p-2 border border-slate-700">30 cm</td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-h1" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-x1" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
-                                </tr>
-                                <tr class="bg-slate-900/50">
-                                    <td class="p-2 border border-slate-700 font-semibold text-emerald-400">Tengah (B)</td>
-                                    <td class="p-2 border border-slate-700">20 cm</td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-h2" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-x2" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
-                                </tr>
-                                <tr class="bg-slate-900/50">
-                                    <td class="p-2 border border-slate-700 font-semibold text-indigo-400">Bawah (C)</td>
-                                    <td class="p-2 border border-slate-700">10 cm</td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-h3" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p1-x3" class="w-full bg-transparent border-b border-slate-700 focus:outline-none"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pertanyaan Analisis P1 -->
-                    <div class="text-xs space-y-2 pt-2">
-                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 1:</label>
-                        <p class="text-slate-400">1. Lubang manakah yang memancarkan air paling jauh? Mengapa hal tersebut dapat terjadi berdasarkan konsep kedalaman ($h$) dan tekanan hidrostatis?</p>
-                        <textarea id="lkpd-q1" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
-                    </div>
-                </div>
-
-                <!-- Bagian 2: Percobaan Jenis Zat Cair -->
-                <div class="mb-8 space-y-3">
-                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
-                        <span>B. Percobaan 2: Pengaruh Massa Jenis Fluida & Kedalaman</span>
-                    </h3>
-                    <p class="text-xs text-slate-300">Tujuan: Menganalisis pengaruh massa jenis fluida ($\rho$) dan kedalaman ($h$) terhadap nilai tekanan hidrostatis ($P_h$).</p>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left text-slate-300 border border-slate-700 print-border">
-                            <thead class="bg-slate-800 text-sky-300 font-semibold">
-                                <tr>
-                                    <th class="p-2 border border-slate-700">Jenis Fluida</th>
-                                    <th class="p-2 border border-slate-700">Massa Jenis ($\rho$)</th>
-                                    <th class="p-2 border border-slate-700">Kedalaman Sensor ($h$)</th>
-                                    <th class="p-2 border border-slate-700">Tekanan Hidrostatis ($P_h$)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-slate-900/50">
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-name" value="Air Murni" class="w-full bg-transparent focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-rho" value="1000 kg/m³" class="w-full bg-transparent focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-h" class="w-full bg-transparent focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f1-p" class="w-full bg-transparent focus:outline-none"></td>
-                                </tr>
-                                <tr class="bg-slate-900/50">
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-name" value="Minyak Goreng" class="w-full bg-transparent focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-rho" value="800 kg/m³" class="w-full bg-transparent focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-h" class="w-full bg-transparent focus:outline-none"></td>
-                                    <td class="p-2 border border-slate-700"><input type="text" id="lkpd-p2-f2-p" class="w-full bg-transparent focus:outline-none"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="text-xs space-y-2 pt-2">
-                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 2:</label>
-                        <p class="text-slate-400">2. Bagaimana pengaruh perubahan massa jenis fluida ($\rho$) terhadap tekanan hidrostatis jika kedalaman ($h$) dijaga tetap sama?</p>
-                        <textarea id="lkpd-q2" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
-                    </div>
-                </div>
-
-                <!-- Bagian 3: Hukum Pascal -->
-                <div class="mb-8 space-y-3">
-                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
-                        <span>C. Percobaan 3: Hukum Pascal (Dongkrak Hidrolik)</span>
-                    </h3>
-                    <p class="text-xs text-slate-300">Tujuan: Membuktikan prinsip penerusan tekanan pada ruang tertutup dan menghitung gaya output ($F_2$).</p>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 print-border">
-                        <div><span class="text-slate-400 block">Luas Piston Kecil ($A_1$):</span> <input type="text" id="lkpd-p3-a1" class="w-full bg-transparent font-bold text-sky-300 focus:outline-none"></div>
-                        <div><span class="text-slate-400 block">Luas Piston Besar ($A_2$):</span> <input type="text" id="lkpd-p3-a2" class="w-full bg-transparent font-bold text-sky-300 focus:outline-none"></div>
-                        <div><span class="text-slate-400 block">Gaya Input ($F_1$):</span> <input type="text" id="lkpd-p3-f1" class="w-full bg-transparent font-bold text-amber-300 focus:outline-none"></div>
-                        <div><span class="text-slate-400 block">Gaya Output ($F_2$):</span> <input type="text" id="lkpd-p3-f2" class="w-full bg-transparent font-bold text-emerald-400 focus:outline-none"></div>
-                    </div>
-
-                    <div class="text-xs space-y-2 pt-2">
-                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 3:</label>
-                        <p class="text-slate-400">3. Jelaskan mengapa gaya input kecil ($F_1$) pada penampang $A_1$ mampu mengangkat beban yang jauh lebih berat pada penampang $A_2$ berdasarkan Hukum Pascal!</p>
-                        <textarea id="lkpd-q3" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
-                    </div>
-                </div>
-
-                <!-- Bagian 4: Hukum Archimedes -->
-                <div class="mb-8 space-y-3">
-                    <h3 class="text-sm font-bold text-sky-400 border-b border-slate-700 pb-1 flex items-center gap-2">
-                        <span>D. Percobaan 4: Hukum Archimedes</span>
-                    </h3>
-                    <p class="text-xs text-slate-300">Tujuan: Menentukan hubungan Gaya Apung ($F_a$) dengan berat fluida yang dipindahkan serta kondisi terapung/melayang/tenggelam.</p>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 print-border">
-                        <div><span class="text-slate-400 block">Massa Jenis Benda ($\rho_b$):</span> <input type="text" id="lkpd-p4-rhob" class="w-full bg-transparent font-bold text-sky-300 focus:outline-none"></div>
-                        <div><span class="text-slate-400 block">Berat Udara ($W$):</span> <input type="text" id="lkpd-p4-w" class="w-full bg-transparent font-bold text-amber-300 focus:outline-none"></div>
-                        <div><span class="text-slate-400 block">Gaya Apung ($F_a$):</span> <input type="text" id="lkpd-p4-fa" class="w-full bg-transparent font-bold text-emerald-400 focus:outline-none"></div>
-                        <div><span class="text-slate-400 block">Berat Semu ($W'$):</span> <input type="text" id="lkpd-p4-wapp" class="w-full bg-transparent font-bold text-indigo-300 focus:outline-none"></div>
-                    </div>
-
-                    <div class="text-xs space-y-2 pt-2">
-                        <label class="block font-semibold text-slate-200">Pertanyaan Analisis Percobaan 4:</label>
-                        <p class="text-slate-400">4. Kapan suatu benda dikatakan terapung, melayang, dan tenggelam jika ditinjau dari perbandingan massa jenis benda ($\rho_b$) dengan massa jenis fluida ($\rho_f$)?</p>
-                        <textarea id="lkpd-q4" rows="2" placeholder="Tuliskan jawaban analisis Anda di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
-                    </div>
-                </div>
-
-                <!-- Kesimpulan Umum LKPD -->
-                <div class="mb-6 space-y-2 border-t border-slate-700 pt-4">
-                    <label class="block font-bold text-amber-400 text-xs uppercase tracking-wider">Kesimpulan Umum Praktikum:</label>
-                    <textarea id="lkpd-kesimpulan" rows="3" placeholder="Tuliskan kesimpulan umum hasil praktikum Mekanika Fluida yang telah dilakukan..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500"></textarea>
-                </div>
-
-                <!-- Tanda Tangan Cetak -->
-                <div class="mt-8 pt-4 border-t border-slate-700 grid grid-cols-2 text-center text-xs text-slate-300 hidden print:grid">
+                <div class="print-header flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 mb-6">
                     <div>
-                        <p>Paraf Siswa / Ketua Kelompok</p>
-                        <br><br><br>
-                        <p>( .................................................... )</p>
+                        <h2 class="text-2xl font-black text-sky-400 tracking-tight">LEMBAR KERJA PESERTA DIDIK (LKPD)</h2>
+                        <p class="text-sm text-slate-400 font-medium">Praktikum Virtual Mekanika Fluida & Tekanan Hidrostatis</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 no-print">
+                        <button onclick="window.print()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition shadow-lg flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-print"></i> Cetak / Export PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Identitas Siswa -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 print-border p-4 rounded-xl bg-slate-950/50">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Siswa / Kelompok:</label>
+                        <input type="text" placeholder="Masukkan Nama Lengkap..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-sky-500">
                     </div>
                     <div>
-                        <p>Nilai / Paraf Guru Fisika</p>
-                        <br><br><br>
-                        <p>( .................................................... )</p>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Kelas / No. Absen:</label>
+                        <input type="text" placeholder="Contoh: XI IPA 1 / 12" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-sky-500">
                     </div>
                 </div>
 
+                <!-- Bagian Pertanyaan Analisis -->
+                <div class="space-y-6 text-sm text-slate-200">
+                    <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-800">
+                        <h4 class="font-bold text-sky-400 mb-2">1. Analisis Percobaan Pancaran Water Jet (Hukum Torricelli)</h4>
+                        <p class="text-xs text-slate-400 mb-2">Berdasarkan data percobaan 1, jelaskan hubungan antara kedalaman lubang (h) dari permukaan air terhadap kecepatan dan jarak jangkauan pancaran air (x) hingga mengenai lantai!</p>
+                        <textarea rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none" placeholder="Tuliskan jawaban analisis Anda di sini..."></textarea>
+                    </div>
+
+                    <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-800">
+                        <h4 class="font-bold text-sky-400 mb-2">2. Analisis Tekanan Hidrostatis & Jenis Fluida</h4>
+                        <p class="text-xs text-slate-400 mb-2">Bagaimana pengaruh perbandingan massa jenis fluida (misal: Air vs Minyak vs Raksa) terhadap besarnya tekanan hidrostatis pada kedalaman yang sama?</p>
+                        <textarea rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none" placeholder="Tuliskan jawaban analisis Anda di sini..."></textarea>
+                    </div>
+
+                    <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-800">
+                        <h4 class="font-bold text-sky-400 mb-2">3. Analisis Prinsip Hukum Pascal Pada Dongkrak Hidrolik</h4>
+                        <p class="text-xs text-slate-400 mb-2">Mengapa gaya tekan F1 yang relatif kecil pada piston A1 mampu menghasilkan gaya angkat F2 yang jauh lebih besar pada piston A2?</p>
+                        <textarea rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none" placeholder="Tuliskan jawaban analisis Anda di sini..."></textarea>
+                    </div>
+
+                    <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-800">
+                        <h4 class="font-bold text-sky-400 mb-2">4. Analisis Syarat Benda Terapung, Melayang, dan Tenggelam (Archimedes)</h4>
+                        <p class="text-xs text-slate-400 mb-2">Tuliskan syarat hubungan antara massa jenis benda (ρb) dan massa jenis fluida (ρf) serta hubungkan dengan berat benda di udara (W) dan berat semu (W')!</p>
+                        <textarea rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none" placeholder="Tuliskan jawaban analisis Anda di sini..."></textarea>
+                    </div>
+                </div>
             </div>
         </section>
-
     </main>
 
-    <!-- Modal Identitas Penyusun -->
-    <div id="modal-identitas" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel bg-slate-900 max-w-md w-full rounded-2xl p-6 border border-slate-700 shadow-2xl relative">
-            <button onclick="closeModal('modal-identitas')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="flex items-center gap-3 mb-4">
-                <div class="p-3 bg-sky-600/30 text-sky-400 rounded-xl border border-sky-500/40">
-                    <i class="fa-solid fa-user-graduate text-2xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white">Identitas Penyusun</h3>
-                    <p class="text-xs text-slate-400">Pengembang Media Pembelajaran Virtual</p>
-                </div>
-            </div>
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500 no-print">
+        <p>Simulator Interaktif Lab Virtual Fisika Mekanika Fluida &copy; 2026</p>
+    </footer>
 
-            <div class="space-y-3 text-sm text-slate-300 border-t border-b border-slate-800 py-4 my-2">
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Judul Media:</span>
-                    <span class="font-semibold text-sky-300">Simulator Mekanika Fluida</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Mata Pelajaran:</span>
-                    <span class="font-semibold text-slate-200">Fisika SMP / SMA</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Materi Utama:</span>
-                    <span class="font-semibold text-slate-200">Tekanan Hidrostatis & Fluida</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Tim Penyusun:</span>
-                    <span class="font-semibold text-emerald-400">Pengembang Laboratorium Fisika</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Versi Simulator:</span>
-                    <span class="font-mono text-xs bg-slate-800 px-2 py-0.5 rounded text-sky-400">v2.5 Interaktif</span>
-                </div>
-            </div>
-
-            <p class="text-xs text-slate-400 text-center mt-3">
-                Dirancang untuk memfasilitasi konsep saintifik melalui eksperimen berbasis visualisasi numerik dan animasi fisika.
+    <!-- Modals -->
+    <div id="modal-identitas" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full m-4 shadow-2xl">
+            <h3 class="text-lg font-bold text-sky-400 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-id-card"></i> Identitas Modul Lab
+            </h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                Media Pembelajaran Fisika Interaktif Berbasis Simulasi Komputasi untuk Memvisualisasikan Konsep Tekanan Hidrostatis, Hukum Pascal, dan Hukum Archimedes.
             </p>
-            <button onclick="closeModal('modal-identitas')" class="mt-4 w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs transition">
+            <button onclick="closeModal('modal-identitas')" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-xl transition">
                 Tutup
             </button>
         </div>
     </div>
 
-    <!-- Modal Petunjuk / Panduan -->
-    <div id="modal-petunjuk" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel bg-slate-900 max-w-lg w-full rounded-2xl p-6 border border-slate-700 shadow-2xl relative">
-            <button onclick="closeModal('modal-petunjuk')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="flex items-center gap-3 mb-4">
-                <div class="p-3 bg-amber-600/30 text-amber-400 rounded-xl border border-amber-500/40">
-                    <i class="fa-solid fa-book-open text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white">Panduan Penggunaan</h3>
-                    <p class="text-xs text-slate-400">Petunjuk Praktikum Virtual</p>
-                </div>
-            </div>
-
-            <div class="space-y-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                    <span class="font-bold text-sky-400 block mb-1">Percobaan 1: Pancaran 3 Lubang</span>
-                    <p>Atur tinggi air dalam botol. Buka atau tutup masing-masing lubang (Top, Mid, Low) untuk mengamati beda jarak pancaran air horizontal yang dihasilkan.</p>
-                </div>
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                    <span class="font-bold text-sky-400 block mb-1">Percobaan 2: Pengaruh Jenis Zat Cair</span>
-                    <p>Ganti jenis cairan (Minyak, Air, Gliserin, Raksa) dan geser kedalaman sensor untuk membaca perubahan tekanan hidrostatis pada manometer digital.</p>
-                </div>
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                    <span class="font-bold text-sky-400 block mb-1">Percobaan 3: Hukum Pascal</span>
-                    <p>Ubah luas penampang piston A1 dan A2. Berikan gaya F1 lalu tekan piston untuk melihat transfer gaya dan pengangkatan beban.</p>
-                </div>
-                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-                    <span class="font-bold text-sky-400 block mb-1">Percobaan 4: Hukum Archimedes</span>
-                    <p>Atur massa dan volume benda. Turunkan benda ke dalam wadah fluida untuk mengamati perubahan skala berat pada neraca pegas dan air yang tumpah.</p>
-                </div>
-            </div>
-
-            <button onclick="closeModal('modal-petunjuk')" class="mt-4 w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs transition">
+    <div id="modal-petunjuk" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-lg w-full m-4 shadow-2xl">
+            <h3 class="text-lg font-bold text-sky-400 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-circle-question"></i> Panduan Penggunaan
+            </h3>
+            <ul class="text-xs text-slate-300 space-y-2 mb-4 list-disc pl-4 leading-relaxed">
+                <li>Gunakan navigasi tab di bagian atas untuk berpindah modul eksperimen.</li>
+                <li>Atur slider kontrol pada panel sebelah kanan untuk menyesuaikan variabel fisika.</li>
+                <li>Pada <b>Percobaan 1 (Pancaran 3 Lubang)</b>, amati bahwa lubang paling bawah (Lubang C) memiliki kedalaman air $h$ terbesar sehingga pancaran air $x$ paling jauh!</li>
+                <li>Pada <b>Percobaan 4 (Hukum Archimedes)</b>, amati penurunan angka neraca pegas dan air yang tumpah melalui bejana berpancur menuju gelas ukur penampung.</li>
+            </ul>
+            <button onclick="closeModal('modal-petunjuk')" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-xl transition">
                 Saya Mengerti
             </button>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-slate-950 border-t border-slate-800/80 py-3 text-center text-xs text-slate-500">
-        <p>Lab Virtual Fisika Interaktif - Simulasi Konsep Tekanan & Mekanika Fluida</p>
-    </footer>
-
+    <!-- JAVASCRIPT SIMULATOR -->
     <script>
-        // State Global Simulator
-        var currentTab = 1;
-        var animFrames = {};
+        // State Global Aplikasi
+        let currentTab = 1;
+        let animationFrameIds = {};
 
-        // Tab 1 Variables
-        var t1_waterLevel = 35; // cm (range 0 - 40)
-        var t1_holes = { 1: true, 2: true, 3: true }; // Status terbuka
-        var t1_holeY = { 1: 30, 2: 20, 3: 10 }; // cm dari dasar botol
-        var t1_autoRefill = false;
+        // STATE TAB 1: Botol 3 Lubang
+        let t1_waterHeight = 35.0; // cm di dalam botol (maks 40cm)
+        let t1_holes = [true, true, true]; // [Atas(A), Tengah(B), Bawah(C)]
+        let t1_autoRefill = false;
+        // Ketinggian lubang relatif terhadap dasar BOTOL (cm)
+        const HOLE_POSITIONS_IN_BOTTLE = [30.0, 20.0, 10.0]; 
+        // Ketinggian botol di atas meja (stand height = 15 cm)
+        const BOTTLE_STAND_HEIGHT = 15.0; 
 
-        // Tab 2 Variables
-        var t2_rho = 1000;
-        var t2_depth = 0.5; // meter
-        var t2_gravity = 9.8; // m/s^2
-        var t2_fluidColor = "#0284c7";
-        var t2_fluidName = "Air Murni";
+        // STATE TAB 2: Jenis Zat Cair
+        let t2_fluidRho = 1000;
+        let t2_fluidColor = "#0284c7";
+        let t2_depth = 50; // cm
+        let t2_gravity = 9.8; // m/s²
 
-        // Tab 3 Variables
-        var t3_a1 = 2; // cm2
-        var t3_a2 = 20; // cm2
-        var t3_f1 = 100; // N
-        var t3_pressProgress = 0; // 0 to 1 for animation
-        var t3_isPressing = false;
+        // STATE TAB 3: Hukum Pascal
+        let t3_A1 = 2; // cm²
+        let t3_A2 = 20; // cm²
+        let t3_F1 = 100; // N
+        let t3_displacement1 = 0;
+        let t3_currDisp1 = 0;
+        let t3_isPressing = false;
 
-        // Tab 4 Variables
-        var t4_mass = 2.0; // kg
-        var t4_vol = 2500; // cm3 -> 0.0025 m3
-        var t4_rhoFluid = 1000; // kg/m3
-        var t4_submergePos = 50; // % lowered
-        var t4_fluidColor = "#0284c7";
+        // STATE TAB 4: Hukum Archimedes
+        let t4_mass = 2.0; // kg
+        let t4_volume = 2500; // cm³
+        let t4_rhoFluid = 1000;
+        let t4_fluidColor = "#0284c7";
+        let t4_position = 50; // % position lowered into fluid
 
-        // Function Navigation Modal
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
+        // Utility Modal & Tab Switch
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        // Tab Switcher Update Including LKPD (Tab 5)
         function switchTab(tabIndex) {
             currentTab = tabIndex;
-            for (var i = 1; i <= 5; i++) {
-                var btn = document.getElementById('tab-btn-' + i);
-                var sec = document.getElementById('tab-' + i);
-                if (btn && sec) {
-                    if (i === tabIndex) {
+            for (let i = 1; i <= 5; i++) {
+                const sec = document.getElementById(`tab-${i}`);
+                const btn = document.getElementById(`tab-btn-${i}`);
+                if (i === tabIndex) {
+                    sec.classList.remove('hidden');
+                    if (btn) {
                         btn.className = "tab-active px-4 py-2.5 rounded-t-lg transition flex items-center gap-2";
-                        sec.classList.remove('hidden');
-                    } else {
+                    }
+                } else {
+                    sec.classList.add('hidden');
+                    if (btn) {
                         btn.className = "tab-inactive px-4 py-2.5 rounded-t-lg transition flex items-center gap-2";
-                        sec.classList.add('hidden');
                     }
                 }
             }
-            if (tabIndex === 5) {
-                autoFillLKPDFromSim();
+            setTimeout(() => {
+                resizeCanvases();
+            }, 50);
+        }
+
+        function setupCanvas(id) {
+            const canvas = document.getElementById(id);
+            if (!canvas) return null;
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            return { canvas, ctx, width: rect.width, height: rect.height };
+        }
+
+        function resizeCanvases() {
+            if (currentTab === 1) renderTab1();
+            if (currentTab === 2) renderTab2();
+            if (currentTab === 3) renderTab3();
+            if (currentTab === 4) renderTab4();
+        }
+
+        window.addEventListener('resize', resizeCanvases);
+
+        // ================= PERCOBAAN 1 LOGIC =================
+        function updateTab1Height(val) {
+            t1_waterHeight = parseFloat(val);
+            document.getElementById('val-t1-height').innerText = t1_waterHeight.toFixed(1) + ' cm';
+            updateTab1Data();
+        }
+
+        function toggleHole(index) {
+            t1_holes[index - 1] = !t1_holes[index - 1];
+            const btn = document.getElementById(`btn-hole-${index}`);
+            if (t1_holes[index - 1]) {
+                btn.className = "px-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1";
+            } else {
+                btn.className = "px-2 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1";
             }
-            resizeAllCanvases();
+            updateTab1Data();
         }
 
-        // Fungsi Auto-Fill Data Simulator ke LKPD
-        function autoFillLKPDFromSim() {
-            // Percobaan 1
-            document.getElementById('lkpd-p1-h1').value = (t1_waterLevel - 30 > 0 ? (t1_waterLevel - 30).toFixed(1) : 0) + " cm";
-            document.getElementById('lkpd-p1-h2').value = (t1_waterLevel - 20 > 0 ? (t1_waterLevel - 20).toFixed(1) : 0) + " cm";
-            document.getElementById('lkpd-p1-h3').value = (t1_waterLevel - 10 > 0 ? (t1_waterLevel - 10).toFixed(1) : 0) + " cm";
-
-            document.getElementById('lkpd-p1-x1').value = document.getElementById('p1-x1').innerText;
-            document.getElementById('lkpd-p1-x2').value = document.getElementById('p1-x2').innerText;
-            document.getElementById('lkpd-p1-x3').value = document.getElementById('p1-x3').innerText;
-
-            // Percobaan 2
-            document.getElementById('lkpd-p2-f1-h').value = (t2_depth * 100).toFixed(0) + " cm";
-            document.getElementById('lkpd-p2-f1-p').value = document.getElementById('out-t2-ph').innerText;
-            document.getElementById('lkpd-p2-f2-h').value = (t2_depth * 100).toFixed(0) + " cm";
-
-            // Percobaan 3
-            document.getElementById('lkpd-p3-a1').value = t3_a1 + " cm²";
-            document.getElementById('lkpd-p3-a2').value = t3_a2 + " cm²";
-            document.getElementById('lkpd-p3-f1').value = t3_f1 + " N";
-            document.getElementById('lkpd-p3-f2').value = document.getElementById('out-t3-f2').innerText;
-
-            // Percobaan 4
-            document.getElementById('lkpd-p4-rhob').value = document.getElementById('out-t4-rhob').innerText;
-            document.getElementById('lkpd-p4-w').value = document.getElementById('out-t4-w').innerText;
-            document.getElementById('lkpd-p4-fa').value = document.getElementById('out-t4-fa').innerText;
-            document.getElementById('lkpd-p4-wapp').value = document.getElementById('out-t4-wapp').innerText;
+        function fillWaterTab1() {
+            t1_waterHeight = 35.0;
+            document.getElementById('slider-t1-height').value = 35.0;
+            document.getElementById('val-t1-height').innerText = '35.0 cm';
+            updateTab1Data();
         }
 
-        // Fungsi Simpan Draf LKPD ke LocalStorage
-        function saveLKPDDraft() {
-            var fields = [
-                'lkpd-nama', 'lkpd-kelas', 'lkpd-sekolah',
-                'lkpd-q1', 'lkpd-q2', 'lkpd-q3', 'lkpd-q4', 'lkpd-kesimpulan'
-            ];
-            fields.forEach(function(id) {
-                var el = document.getElementById(id);
-                if (el) localStorage.setItem(id, el.value);
-            });
-            alert('Draf LKPD berhasil disimpan di memori browser!');
+        function toggleAutoRefill() {
+            t1_autoRefill = !t1_autoRefill;
+            const btn = document.getElementById('btn-auto-refill');
+            btn.innerText = `Aliran Konstan: ${t1_autoRefill ? 'ON' : 'OFF'}`;
+            btn.className = t1_autoRefill ? 
+                "py-2.5 px-3 bg-sky-600 text-white text-xs font-semibold rounded-xl transition" : 
+                "py-2.5 px-3 bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition";
         }
 
-        // Fungsi Load Draf LKPD
-        function loadLKPDDraft() {
-            var fields = [
-                'lkpd-nama', 'lkpd-kelas', 'lkpd-sekolah',
-                'lkpd-q1', 'lkpd-q2', 'lkpd-q3', 'lkpd-q4', 'lkpd-kesimpulan'
-            ];
-            fields.forEach(function(id) {
-                var el = document.getElementById(id);
-                var saved = localStorage.getItem(id);
-                if (el && saved) el.value = saved;
-            });
+        function updateTab1Data() {
+            for (let i = 0; i < 3; i++) {
+                const hole_y_in_bottle = HOLE_POSITIONS_IN_BOTTLE[i];
+                // h = kedalaman air dari permukaan ke lubang
+                const h = Math.max(0, t1_waterHeight - hole_y_in_bottle);
+                
+                // y_total = tinggi lubang dari lantai/meja
+                const y_total = hole_y_in_bottle + BOTTLE_STAND_HEIGHT;
+                
+                // Jarak pancaran meluncur x = 2 * sqrt(h * y_total)
+                const x = (h > 0 && t1_holes[i]) ? (2 * Math.sqrt(h * y_total)) : 0;
+
+                document.getElementById(`p1-h${i+1}`).innerText = h.toFixed(1) + ' cm';
+                document.getElementById(`p1-x${i+1}`).innerText = x.toFixed(1) + ' cm';
+            }
         }
 
-        // Fungsi Cetak / Download PDF LKPD
-        function printLKPD() {
-            window.print();
-        }
+        function renderTab1() {
+            const setup = setupCanvas('canvas-tab1');
+            if (!setup) return;
+            const { ctx, width, height } = setup;
 
-        // Window resize handler
-        window.addEventListener('resize', resizeAllCanvases);
+            ctx.clearRect(0, 0, width, height);
 
-        function resizeAllCanvases() {
-            var canvases = ['canvas-tab1', 'canvas-tab2', 'canvas-tab3', 'canvas-tab4'];
-            canvases.forEach(function(id) {
-                var c = document.getElementById(id);
-                if (c && c.parentElement) {
-                    c.width = c.parentElement.clientWidth;
-                    c.height = c.parentElement.clientHeight;
+            // Table & Floor setup
+            const tableY = height - 50;
+            const tableX = width * 0.1;
+            const bottleWidth = 80;
+            const bottleHeight = 240;
+            const bottleX = width * 0.22;
+            
+            // Bottle Stand
+            const standHeightPx = 60; // Equivalent to BOTTLE_STAND_HEIGHT = 15 cm
+            const bottleBottomY = tableY - standHeightPx;
+            const bottleTopY = bottleBottomY - bottleHeight;
+
+            // Draw Table Surface
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(20, tableY, width - 40, 15);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(40, tableY + 15, 20, height - tableY - 15);
+            ctx.fillRect(width - 60, tableY + 15, 20, height - tableY - 15);
+
+            // Draw Bottle Stand / Wooden Block
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(bottleX - 10, bottleBottomY, bottleWidth + 20, standHeightPx);
+            ctx.strokeStyle = '#475569';
+            ctx.strokeRect(bottleX - 10, bottleBottomY, bottleWidth + 20, standHeightPx);
+
+            // Water Level in pixels
+            const maxWaterPx = bottleHeight - 20;
+            const waterPx = (t1_waterHeight / 40.0) * maxWaterPx;
+            const waterY = bottleBottomY - waterPx;
+
+            // Draw Fluid inside Bottle
+            ctx.fillStyle = 'rgba(2, 132, 199, 0.7)';
+            ctx.fillRect(bottleX, waterY, bottleWidth, bottleBottomY - waterY);
+
+            // Draw Bottle Glass Container
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(bottleX, bottleTopY);
+            ctx.lineTo(bottleX, bottleBottomY);
+            ctx.lineTo(bottleX + bottleWidth, bottleBottomY);
+            ctx.lineTo(bottleX + bottleWidth, bottleTopY);
+            ctx.stroke();
+
+            // Water Streams Calculation
+            let activeStreams = 0;
+            const streamColors = ['#f59e0b', '#10b981', '#38bdf8']; // A(Atas), B(Tengah), C(Bawah)
+
+            for (let i = 0; i < 3; i++) {
+                const hole_y_cm = HOLE_POSITIONS_IN_BOTTLE[i];
+                const holeYPx = bottleBottomY - (hole_y_cm / 40.0) * maxWaterPx;
+                const holeXPx = bottleX + bottleWidth;
+
+                // Hole Cap / Plug
+                ctx.fillStyle = t1_holes[i] ? streamColors[i] : '#ef4444';
+                ctx.beginPath();
+                ctx.arc(holeXPx, holeYPx, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Parabolic Arc Physics Calculation
+                const h_cm = Math.max(0, t1_waterHeight - hole_y_cm);
+                if (t1_holes[i] && h_cm > 0) {
+                    activeStreams++;
+                    
+                    const y_total_cm = hole_y_cm + BOTTLE_STAND_HEIGHT; // Total height above table
+                    const x_max_cm = 2 * Math.sqrt(h_cm * y_total_cm); // Horizontal Range
+
+                    // Scale factor: 80 cm = width - holeXPx - 30
+                    const pxScale = (width - holeXPx - 40) / 80.0;
+                    const streamPxWidth = x_max_cm * pxScale;
+
+                    ctx.strokeStyle = streamColors[i];
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(holeXPx, holeYPx);
+
+                    // Render parabola curve down to tableY
+                    const vertDistPx = tableY - holeYPx;
+                    for (let step = 0; step <= 25; step++) {
+                        const tRatio = step / 25.0;
+                        const currX = holeXPx + streamPxWidth * tRatio;
+                        // Parabolic fall: y = y0 + k * t^2
+                        const currY = holeYPx + vertDistPx * Math.pow(tRatio, 2);
+                        ctx.lineTo(currX, currY);
+                    }
+                    ctx.stroke();
+
+                    // Ripple Effect on Impact
+                    ctx.fillStyle = streamColors[i] + '55';
+                    ctx.beginPath();
+                    ctx.ellipse(holeXPx + streamPxWidth, tableY, 8, 3, 0, 0, Math.PI * 2);
+                    ctx.fill();
                 }
-            });
+            }
+
+            // Draining Logic
+            if (activeStreams > 0 && !t1_autoRefill && t1_waterHeight > 0) {
+                t1_waterHeight = Math.max(0, t1_waterHeight - 0.015 * activeStreams);
+                document.getElementById('slider-t1-height').value = t1_waterHeight;
+                document.getElementById('val-t1-height').innerText = t1_waterHeight.toFixed(1) + ' cm';
+                updateTab1Data();
+            }
+
+            animationFrameIds[1] = requestAnimationFrame(renderTab1);
         }
 
-        // ... existing code for renderTab1, renderTab2, renderTab3, renderTab4, mainLoop ...
+        // ================= PERCOBAAN 2 LOGIC =================
+        function updateFluidTab2() {
+            const sel = document.getElementById('select-t2-fluid');
+            t2_fluidRho = parseFloat(sel.value);
+            t2_fluidColor = sel.options[sel.selectedIndex].getAttribute('data-color');
+            updateTab2Calculations();
+        }
 
-        // On Load Initialization
+        function updateTab2Calculations() {
+            t2_depth = parseFloat(document.getElementById('slider-t2-depth').value);
+            t2_gravity = parseFloat(document.getElementById('slider-t2-gravity').value);
+
+            document.getElementById('val-t2-depth').innerText = t2_depth.toFixed(0) + ' cm';
+            document.getElementById('val-t2-gravity').innerText = t2_gravity.toFixed(1) + ' m/s²';
+
+            const h_m = t2_depth / 100.0;
+            const ph = t2_fluidRho * t2_gravity * h_m;
+            const kpa = ph / 1000.0;
+            const ptotal = 101.3 + kpa;
+
+            document.getElementById('out-t2-ph').innerText = Math.round(ph) + ' Pa';
+            document.getElementById('out-t2-kpa').innerText = kpa.toFixed(2) + ' kPa';
+            document.getElementById('out-t2-ptotal').innerText = ptotal.toFixed(2) + ' kPa';
+        }
+
+        function renderTab2() {
+            const setup = setupCanvas('canvas-tab2');
+            if (!setup) return;
+            const { ctx, width, height } = setup;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const tankW = width * 0.45;
+            const tankH = height * 0.75;
+            const tankX = width * 0.1;
+            const tankY = height * 0.15;
+
+            ctx.fillStyle = t2_fluidColor + '88';
+            ctx.fillRect(tankX, tankY + 30, tankW, tankH - 30);
+
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(tankX, tankY, tankW, tankH);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px Inter';
+            for (let d = 0; d <= 100; d += 20) {
+                const markY = tankY + 30 + (d / 100.0) * (tankH - 30);
+                ctx.fillRect(tankX - 8, markY, 8, 2);
+                ctx.fillText(d + 'cm', tankX - 38, markY + 3);
+            }
+
+            const sensorY = tankY + 30 + (t2_depth / 100.0) * (tankH - 30);
+            const sensorX = tankX + tankW / 2;
+
+            const meterX = width * 0.75;
+            const meterY = height * 0.35;
+
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(sensorX, sensorY);
+            ctx.lineTo(meterX, meterY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(sensorX, sensorY, 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(meterX - 60, meterY - 50, 120, 100);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(meterX - 60, meterY - 50, 120, 100);
+
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 14px monospace';
+            ctx.textAlign = 'center';
+            const h_m = t2_depth / 100.0;
+            const ph = t2_fluidRho * t2_gravity * h_m;
+            ctx.fillText((ph / 1000).toFixed(2) + ' kPa', meterX, meterY - 10);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px Inter';
+            ctx.fillText('PRESSURE SENSOR', meterX, meterY + 20);
+
+            animationFrameIds[2] = requestAnimationFrame(renderTab2);
+        }
+
+        // ================= PERCOBAAN 3 LOGIC =================
+        function updateTab3Calculations() {
+            t3_A1 = parseFloat(document.getElementById('slider-t3-a1').value);
+            t3_A2 = parseFloat(document.getElementById('slider-t3-a2').value);
+            t3_F1 = parseFloat(document.getElementById('slider-t3-f1').value);
+
+            document.getElementById('val-t3-a1').innerText = t3_A1 + ' cm²';
+            document.getElementById('val-t3-a2').innerText = t3_A2 + ' cm²';
+            document.getElementById('val-t3-f1').innerText = t3_F1 + ' N';
+
+            const km = t3_A2 / t3_A1;
+            const f2 = t3_F1 * km;
+            const massKg = f2 / 9.8;
+
+            document.getElementById('out-t3-km').innerText = km.toFixed(1) + ' x';
+            document.getElementById('out-t3-f2').innerText = Math.round(f2) + ' N';
+            document.getElementById('out-t3-mass').innerText = Math.round(massKg) + ' kg';
+        }
+
+        function pressPistonPascal() {
+            t3_isPressing = true;
+            t3_displacement1 = 50;
+        }
+
+        function resetPascal() {
+            t3_isPressing = false;
+            t3_displacement1 = 0;
+            t3_currDisp1 = 0;
+        }
+
+        function renderTab3() {
+            const setup = setupCanvas('canvas-tab3');
+            if (!setup) return;
+            const { ctx, width, height } = setup;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (t3_isPressing && t3_currDisp1 < t3_displacement1) {
+                t3_currDisp1 += 1.5;
+            } else if (!t3_isPressing && t3_currDisp1 > 0) {
+                t3_currDisp1 -= 1.5;
+            }
+
+            const pipeBottomY = height * 0.75;
+            const pipeThick = 45;
+            const baseFluidY = height * 0.45;
+
+            const p1Width = 35 + (t3_A1 / 10.0) * 25;
+            const p2Width = 70 + (t3_A2 / 100.0) * 80;
+
+            const p1CenterX = width * 0.25;
+            const p2CenterX = width * 0.70;
+
+            const p1Left = p1CenterX - p1Width / 2;
+            const p1Right = p1CenterX + p1Width / 2;
+            const p2Left = p2CenterX - p2Width / 2;
+            const p2Right = p2CenterX + p2Width / 2;
+
+            const currDisp2 = t3_currDisp1 * (t3_A1 / t3_A2);
+
+            const fluid1Y = baseFluidY + t3_currDisp1;
+            const fluid2Y = baseFluidY - currDisp2;
+
+            // Fluid Filling
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.moveTo(p1Left, fluid1Y);
+            ctx.lineTo(p1Left, pipeBottomY);
+            ctx.lineTo(p2Right, pipeBottomY);
+            ctx.lineTo(p2Right, fluid2Y);
+            ctx.lineTo(p2Left, fluid2Y);
+            ctx.lineTo(p2Left, pipeBottomY - pipeThick);
+            ctx.lineTo(p1Right, pipeBottomY - pipeThick);
+            ctx.lineTo(p1Right, fluid1Y);
+            ctx.closePath();
+            ctx.fill();
+
+            // Pipes Outline
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(p1Left, height * 0.2);
+            ctx.lineTo(p1Left, pipeBottomY);
+            ctx.lineTo(p2Right, pipeBottomY);
+            ctx.lineTo(p2Right, height * 0.2);
+
+            ctx.moveTo(p1Right, height * 0.2);
+            ctx.lineTo(p1Right, pipeBottomY - pipeThick);
+            ctx.lineTo(p2Left, pipeBottomY - pipeThick);
+            ctx.lineTo(p2Left, height * 0.2);
+            ctx.stroke();
+
+            // Piston 1
+            const p1Height = 20;
+            const p1Y = fluid1Y - p1Height;
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(p1CenterX - 5, p1Y - 60, 10, 60);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(p1Left + 2, p1Y, p1Width - 4, p1Height);
+
+            // Force Arrow 1
+            ctx.strokeStyle = '#f59e0b';
+            ctx.fillStyle = '#f59e0b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(p1CenterX, p1Y - 90);
+            ctx.lineTo(p1CenterX, p1Y - 65);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(p1CenterX - 6, p1Y - 65);
+            ctx.lineTo(p1CenterX + 6, p1Y - 65);
+            ctx.lineTo(p1CenterX, p1Y - 55);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(`F1 = ${t3_F1} N`, p1CenterX, p1Y - 95);
+
+            // Piston 2
+            const p2Height = 25;
+            const p2Y = fluid2Y - p2Height;
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(p2CenterX - 8, p2Y - 40, 16, 40);
+            ctx.fillStyle = '#10b981';
+            ctx.fillRect(p2Left + 2, p2Y, p2Width - 4, p2Height);
+
+            const platformW = p2Width + 30;
+            const platformY = p2Y - 40;
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(p2CenterX - platformW / 2, platformY, platformW, 10);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(p2CenterX - 25, platformY - 25, 50, 25);
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '11px Inter';
+            ctx.fillText('BEBAN', p2CenterX, platformY - 8);
+
+            const f2Val = t3_F1 * (t3_A2 / t3_A1);
+            ctx.strokeStyle = '#10b981';
+            ctx.fillStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(p2CenterX, platformY - 30);
+            ctx.lineTo(p2CenterX, platformY - 55);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(p2CenterX - 6, platformY - 55);
+            ctx.lineTo(p2CenterX + 6, platformY - 55);
+            ctx.lineTo(p2CenterX, platformY - 65);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText(`F2 = ${Math.round(f2Val)} N`, p2CenterX, platformY - 72);
+
+            animationFrameIds[3] = requestAnimationFrame(renderTab3);
+        }
+
+        // ================= PERCOBAAN 4 LOGIC (ENHANCED ARCHIMEDES) =================
+        function updateTab4Calculations() {
+            t4_mass = parseFloat(document.getElementById('slider-t4-mass').value);
+            t4_volume = parseFloat(document.getElementById('slider-t4-vol').value);
+            t4_position = parseFloat(document.getElementById('slider-t4-pos').value);
+
+            const sel = document.getElementById('select-t4-fluid');
+            t4_rhoFluid = parseFloat(sel.value);
+            t4_fluidColor = sel.options[sel.selectedIndex].getAttribute('data-color');
+
+            document.getElementById('val-t4-mass').innerText = t4_mass.toFixed(1) + ' kg';
+            document.getElementById('val-t4-vol').innerText = t4_volume.toFixed(0) + ' cm³';
+            document.getElementById('val-t4-pos').innerText = t4_position.toFixed(0) + ' %';
+
+            const v_m3 = t4_volume / 1000000.0;
+            const rho_benda = t4_mass / v_m3;
+            const w_air = t4_mass * 9.8;
+
+            // Submerged Ratio calculation
+            const submergedFraction = Math.min(1.0, (t4_position / 100.0));
+            const v_submerged_m3 = v_m3 * submergedFraction;
+            const Fa = t4_rhoFluid * 9.8 * v_submerged_m3;
+            const w_app = Math.max(0, w_air - Fa);
+
+            document.getElementById('out-t4-rhob').innerText = Math.round(rho_benda) + ' kg/m³';
+            document.getElementById('out-t4-w').innerText = w_air.toFixed(1) + ' N';
+            document.getElementById('out-t4-fa').innerText = Fa.toFixed(1) + ' N';
+            document.getElementById('out-t4-vspill').innerText = (v_submerged_m3 * 1000000).toFixed(0) + ' cm³';
+            document.getElementById('out-t4-wapp').innerText = w_app.toFixed(1) + ' N';
+
+            // Status Tag
+            const tag = document.getElementById('archimedes-status-tag');
+            if (rho_benda < t4_rhoFluid) {
+                tag.innerText = "Status: TERAPUNG";
+                tag.className = "px-2.5 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-bold shadow-sm";
+            } else if (Math.abs(rho_benda - t4_rhoFluid) < 50) {
+                tag.innerText = "Status: MELAYANG";
+                tag.className = "px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold shadow-sm";
+            } else {
+                tag.innerText = "Status: TENGGELAM";
+                tag.className = "px-2.5 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full text-xs font-bold shadow-sm";
+            }
+        }
+
+        function renderTab4() {
+            const setup = setupCanvas('canvas-tab4');
+            if (!setup) return;
+            const { ctx, width, height } = setup;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Container Beaker Geometry
+            const beakerX = width * 0.15;
+            const beakerW = width * 0.38;
+            const beakerH = height * 0.52;
+            const beakerY = height * 0.38;
+            const overflowSpoutY = beakerY + 30; // Spout location at brim
+
+            // Catch Beaker Geometry (Right side)
+            const catchX = beakerX + beakerW + 55;
+            const catchW = width * 0.20;
+            const catchH = height * 0.32;
+            const catchY = beakerY + beakerH - catchH;
+
+            // Calculations
+            const v_m3 = t4_volume / 1000000.0;
+            const w_air = t4_mass * 9.8;
+            const submergedFraction = Math.min(1.0, (t4_position / 100.0));
+            const v_subm_cm3 = t4_volume * submergedFraction;
+            const Fa = t4_rhoFluid * 9.8 * (v_m3 * submergedFraction);
+            const w_app = Math.max(0, w_air - Fa);
+
+            // 1. DRAW OVERFLOW BEAKER
+            ctx.fillStyle = t4_fluidColor + '77';
+            ctx.fillRect(beakerX, overflowSpoutY, beakerW, beakerY + beakerH - overflowSpoutY);
+
+            // Spout Outlet Tube
+            ctx.fillStyle = t4_fluidColor + 'bb';
+            ctx.beginPath();
+            ctx.moveTo(beakerX + beakerW, overflowSpoutY);
+            ctx.lineTo(beakerX + beakerW + 35, overflowSpoutY + 20);
+            ctx.lineTo(beakerX + beakerW + 35, overflowSpoutY + 28);
+            ctx.lineTo(beakerX + beakerW, overflowSpoutY + 12);
+            ctx.closePath();
+            ctx.fill();
+
+            // Glass Beaker Lines
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            // Left Wall
+            ctx.moveTo(beakerX, beakerY);
+            ctx.lineTo(beakerX, beakerY + beakerH);
+            // Bottom Floor
+            ctx.lineTo(beakerX + beakerW, beakerY + beakerH);
+            // Right Wall (Up to spout)
+            ctx.lineTo(beakerX + beakerW, overflowSpoutY + 12);
+            // Spout Lip
+            ctx.lineTo(beakerX + beakerW + 35, overflowSpoutY + 28);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(beakerX + beakerW, overflowSpoutY);
+            ctx.lineTo(beakerX + beakerW + 35, overflowSpoutY + 20);
+            ctx.moveTo(beakerX + beakerW, overflowSpoutY);
+            ctx.lineTo(beakerX + beakerW, beakerY);
+            ctx.stroke();
+
+            // 2. DRAW CATCH BEAKER & SPILL WATER
+            const maxCatchCap = 5000; // cm³ max
+            const catchWaterPx = (v_subm_cm3 / maxCatchCap) * catchH;
+            const catchWaterY = catchY + catchH - catchWaterPx;
+
+            // Accumulated spilled water
+            ctx.fillStyle = t4_fluidColor + 'aa';
+            ctx.fillRect(catchX, catchWaterY, catchW, catchWaterPx);
+
+            // Catch Beaker Glass Outline
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(catchX, catchY, catchW, catchH);
+
+            // Spilling Stream Animation
+            if (v_subm_cm3 > 10 && t4_position > 5) {
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(beakerX + beakerW + 33, overflowSpoutY + 25);
+                ctx.quadraticCurveTo(catchX + catchW / 2, overflowSpoutY + 40, catchX + catchW / 2, catchY + catchH - catchWaterPx);
+                ctx.stroke();
+            }
+
+            // Catch Beaker Measurement Marks
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '9px monospace';
+            ctx.fillText(`${Math.round(v_subm_cm3)} cm³`, catchX + 5, catchWaterY - 5);
+
+            // 3. DRAW SPRING SCALE AT TOP
+            const scaleX = beakerX + beakerW / 2 - 20;
+            const scaleY = 20;
+            const scaleW = 40;
+            const scaleH = 110;
+
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(scaleX, scaleY, scaleW, scaleH);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(scaleX, scaleY, scaleW, scaleH);
+
+            // Spring Coil Animation
+            const objTargetY = beakerY + 10 + (t4_position / 100.0) * (beakerH - 80);
+            const springTopY = scaleY + 20;
+            const springBottomY = scaleY + scaleH - 10;
+
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(scaleX + scaleW / 2, springTopY);
+            for (let i = 0; i <= 8; i++) {
+                const sy = springTopY + (i / 8) * (springBottomY - springTopY);
+                const sx = scaleX + scaleW / 2 + ((i % 2 === 0) ? 8 : -8);
+                ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+
+            // Spring Scale Dial / Indicator Pointer
+            const maxNewton = 100;
+            const needleRatio = Math.min(1.0, w_app / maxNewton);
+            const indicatorY = springTopY + needleRatio * (springBottomY - springTopY);
+
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(scaleX + scaleW - 2, indicatorY);
+            ctx.lineTo(scaleX + scaleW + 8, indicatorY - 4);
+            ctx.lineTo(scaleX + scaleW + 8, indicatorY + 4);
+            ctx.closePath();
+            ctx.fill();
+
+            // Scale Display Text
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${w_app.toFixed(1)}N`, scaleX + scaleW / 2, scaleY + 14);
+
+            // Suspension Wire
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(scaleX + scaleW / 2, scaleY + scaleH);
+            ctx.lineTo(scaleX + scaleW / 2, objTargetY);
+            ctx.stroke();
+
+            // 4. DRAW OBJECT BLOCK
+            const objW = 50;
+            const objH = 50;
+            const objX = (scaleX + scaleW / 2) - objW / 2;
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(objX, objTargetY, objW, objH);
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(objX, objTargetY, objW, objH);
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 10px Inter';
+            ctx.fillText(`${t4_mass}kg`, scaleX + scaleW / 2, objTargetY + objH / 2 + 3);
+
+            // 5. DRAW FORCE VECTORS ON OBJECT
+            const centerObjX = scaleX + scaleW / 2;
+            const centerObjY = objTargetY + objH / 2;
+
+            // Gravity Force Arrow (W - Red Down)
+            ctx.strokeStyle = '#ef4444';
+            ctx.fillStyle = '#ef4444';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(centerObjX - 10, centerObjY);
+            ctx.lineTo(centerObjX - 10, centerObjY + 40);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(centerObjX - 14, centerObjY + 40);
+            ctx.lineTo(centerObjX - 6, centerObjY + 40);
+            ctx.lineTo(centerObjX - 10, centerObjY + 48);
+            ctx.closePath();
+            ctx.fill();
+            ctx.font = 'bold 10px Inter';
+            ctx.fillText('W', centerObjX - 22, centerObjY + 45);
+
+            // Buoyant Force Arrow (Fa - Green Up)
+            if (Fa > 0) {
+                const faLen = Math.min(45, (Fa / w_air) * 40);
+                ctx.strokeStyle = '#10b981';
+                ctx.fillStyle = '#10b981';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(centerObjX + 10, centerObjY);
+                ctx.lineTo(centerObjX + 10, centerObjY - faLen);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(centerObjX + 6, centerObjY - faLen);
+                ctx.lineTo(centerObjX + 14, centerObjY - faLen);
+                ctx.lineTo(centerObjX + 10, centerObjY - faLen - 8);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillText('Fa', centerObjX + 22, centerObjY - faLen + 5);
+            }
+
+            animationFrameIds[4] = requestAnimationFrame(renderTab4);
+        }
+
+        // Initialize on load
         window.onload = function() {
-            resizeAllCanvases();
-            updateFluidTab2();
+            updateTab1Data();
+            updateTab2Calculations();
             updateTab3Calculations();
             updateTab4Calculations();
-            loadLKPDDraft();
-            mainLoop();
+            switchTab(1);
         };
     </script>
 </body>
